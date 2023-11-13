@@ -1,2 +1,1 @@
 # Bible Detective
-# Bible Detective
