@@ -24,6 +24,9 @@ func Index(c echo.Context) error {
 	return c.Render(http.StatusOK, "index.html", nil)
 }
 
+func Play(c echo.Context) error {
+	return c.Render(http.StatusOK, "play.html", nil)
+}
 func main() {
 	// Parse templates
 	templates, err := template.ParseGlob(path.Join(template_files, "*.html"))
@@ -42,6 +45,7 @@ func main() {
 	e.Static("/img", "public/img")
 
 	e.GET("/", Index)
+	e.GET("/play", Play)
 
 	e.Logger.Fatal(e.Start("localhost:42069"))
 }
