@@ -41,7 +41,7 @@ If you are using VSCode, there are some helpful plugins you should install if yo
 In your terminal, you'll need to run this command to grab the packages that the
 project will use to run the server:
 ```sh
-go mod tidy 
+go mod tidy
 ```
 
 In addition, you will need to install the packages required for tailwind:

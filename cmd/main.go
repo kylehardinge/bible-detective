@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
+	"bible-detective/site/pkg/router"
+	"bible-detective/site/pkg/db"
 	"html/template"
-	
 	"io"
 	"log"
 	"path"
@@ -20,19 +20,15 @@ type TemplateRenderer struct {
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.template.ExecuteTemplate(w, name, data)
 }
-func Index(c echo.Context) error {
-	return c.Render(http.StatusOK, "index.html", nil)
-}
 
-func Play(c echo.Context) error {
-	return c.Render(http.StatusOK, "play.html", nil)
-}
 func main() {
 	// Parse templates
 	templates, err := template.ParseGlob(path.Join(template_files, "*.html"))
 	if err != nil {
 		log.Fatalf("Error loading templates: %v\n", err)
 	}
+	
+	db.InitDb()
 
 	e := echo.New()
 	
@@ -44,9 +40,11 @@ func main() {
 	e.Static("/css", "public/css")
 	e.Static("/img", "public/img")
 
-	e.GET("/", Index)
-	e.GET("/play", Play)
+	e.GET("/", router.Index)
+	e.GET("/play", router.Play)
+	e.GET("/random", router.Random)
+	e.GET("/api/:verse", router.Api)
 
-	e.Logger.Fatal(e.Start("localhost:42069"))
+	e.Logger.Fatal(e.Start("localhost:8080"))
 }
 
