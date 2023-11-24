@@ -43,6 +43,7 @@ func main() {
 	e.GET("/", router.Index)
 	e.GET("/play", router.Play)
 	e.GET("/random", router.Random)
+	e.GET("/manifest", router.Manifest)
 	e.GET("/api/:verse", router.Api)
 
 	e.Logger.Fatal(e.Start("localhost:8080"))

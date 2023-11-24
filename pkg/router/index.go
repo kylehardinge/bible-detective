@@ -2,6 +2,7 @@ package router
 
 import (
 	"bible-detective/site/pkg/db"
+	"bible-detective/site/pkg/storage"
 	"fmt"
 	"net/http"
 	"math/rand"
@@ -42,10 +43,12 @@ func Random(c echo.Context) error {
 }
 
 func Manifest(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]string{
-		"stuff": "things",
-		"more_stuff": "things",
-	})
+	kjvManifest, err := storage.OpenManifest("kjv")
+	if err != nil {
+		return err
+	}
+	// fmt.Println(string(kjvManifest))
+	return c.JSON(http.StatusOK, kjvManifest)
 }
 
 func Api(c echo.Context) error {
