@@ -1,0 +1,6 @@
+username=root
+password=password
+protocol=tcp
+server=localhost
+port=3306
+database=bible_detective

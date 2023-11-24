@@ -1,3 +1,4 @@
+// All of the route functions go here
 package router
 
 import (
@@ -11,37 +12,42 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// The function corresponding with the "/" route
 func Index(c echo.Context) error {
 	return c.Render(http.StatusOK, "index.html", nil)
 }
 
+// The function corresponding with the "/play" route
 func Play(c echo.Context) error {
 	return c.Render(http.StatusOK, "play.html", nil)
 }
 
+// The function corresponding with the "/api/random" route
+// Returns a random Bible verse
 func Random(c echo.Context) error {
+	// Get number of Bible verses
 	count := db.Db.QueryRow(`SELECT COUNT(*) FROM kjv`)
-
 	var length int
 	if err := count.Scan(&length); err != nil {
 		panic(err.Error())
 	}
+	
+	// Generate a random verse id [1, max id number]
 	verse_id := rand.Intn(length) + 1
+
+	// Get a verse based on the random id number
 	var verse db.RandomVerse
 	content := db.Db.QueryRow(`SELECT * FROM kjv WHERE id=?`, verse_id)
 	if err := content.Scan(&verse.Id, &verse.Book_id, &verse.Book_name, &verse.Chapter, &verse.Verse, &verse.Text); err != nil {
 		panic(err.Error())
 	}
-	return c.JSON(http.StatusOK, map[string]string{
-		"id": fmt.Sprintf("%d", verse.Id),
-		"book_id": verse.Book_id,
-		"book_name": verse.Book_name,
-		"chapter": fmt.Sprintf("%d", verse.Chapter),
-		"verse": fmt.Sprintf("%d", verse.Verse),
-		"text": verse.Text,
-	})
+	
+	// Return the random bible verse in json format
+	return c.JSON(http.StatusOK, verse)
 }
 
+// The function corresponding with the "/api/manifest" route
+// Returns the Bible manifest for a given version (curently only kjv)
 func Manifest(c echo.Context) error {
 	kjvManifest, err := storage.OpenManifest("kjv")
 	if err != nil {
@@ -51,6 +57,8 @@ func Manifest(c echo.Context) error {
 	return c.JSON(http.StatusOK, kjvManifest)
 }
 
+// The function corresponding with the "/api/:query" route
+// TODO: allow requests for specific verses or chapters
 func Api(c echo.Context) error {
 	
 	verseBook := c.QueryParam("book")

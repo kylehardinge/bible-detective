@@ -1,28 +1,30 @@
 package db
 
 import (
-	"bufio"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
-	"regexp"
-	// "slices"
 	"sort"
 	"bytes"
 	"strings"
+	"bufio"
 	"errors"
 	"github.com/schollz/progressbar/v3"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type FileScanner struct {
-	io.Closer
-	*bufio.Scanner
-}
+// Allows for passing a scanner in the return statment
+// Not Implemented
+// type FileScanner struct {
+// 	io.Closer
+// 	*bufio.Scanner
+// }
 
+// Allows for the representation of a bible verse
+// Used for importing the kjv Bible from json
 type Verse struct {
 	Book_id string `json:"book_id"`
 	Book_name string `json:"book_name"`
@@ -31,8 +33,9 @@ type Verse struct {
 	Text string `json:"text"`
 }
 
+// Allows for the representation of a bible verse
 type RandomVerse struct {
-	Id int
+	Id int `json:"id"`
 	Book_id string `json:"book_id"`
 	Book_name string `json:"book_name"`
 	Chapter int `json:"chapter"`
@@ -40,12 +43,15 @@ type RandomVerse struct {
 	Text string `json:"text"`
 }
 
+// Allows for the representation of a Chapter
+// Used for importing the kjv Bible from json
 type Chapter struct {
 	Header string `json:"header"`
 	Footer string `json:"footer"`
 	Verses []Verse `json:"verses"`
 }
 
+// Used for the creation of a Bible manifest
 type BibleManifest struct {
 	Version string `json:"version"`
 	Books []BookManifest `json:"books"`
@@ -64,15 +70,21 @@ type ChapterManifest struct {
 	Verses int
 }
 
-// type Db struct {
-// 	
-// 	*sql.DB
-// }
+// Stores the configuration information for the mysql database
+type dbConfigInfo struct {
+	username string
+	password string
+	protocol string
+	server string
+	port string
+	database string
+}
 
 var Db *sql.DB
 
+// Initalize database and seed data
 func InitDb() {
-	db, err := sql.Open("mysql", "root:london-tasmania-broil-scorch-nov-chinese@tcp(localhost:3306)/bible_detective")
+	db, err := sql.Open("mysql", dbConfig())
 
 	if err != nil {
 		fmt.Println("error validating sql.Open statement...")
@@ -97,6 +109,7 @@ func InitDb() {
 	Db = db
 }
 
+// Checks if the database needs seeding
 func seedData(db *sql.DB) error {
 	result := db.QueryRow("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'kjv'")
 	
@@ -112,12 +125,8 @@ func seedData(db *sql.DB) error {
 	return nil
 }
 
+// Setups the KJV bible by adding the data to the database and generating the manifest
 func setupKjv(db *sql.DB) error {
-	// _, err := db.Exec(`DROP TABLE kjv`) 
-	// if err != nil {
-	// 	fmt.Println("error creating table...")
-	// 	panic(err.Error())
-	// }
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS kjv (
 	id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	book_id TEXT NOT NULL,
@@ -213,63 +222,8 @@ func setupKjv(db *sql.DB) error {
 	return nil
 }
 
-// func setupKjvData(db *sql.DB) error {
-// 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS `)
-// 	if err != nil {
-// 		fmt.Println("error creating table...")
-// 		panic(err.Error())
-// 	}
-// 	
-// 	return nil
-// }
-
-func setupFbv(db *sql.DB) error {
-	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS fbv (
-	id INTEGER PRIMARY KEY AUTO_INCREMENT,
-	book TEXT NOT NULL,
-	chapter INTEGER NOT NULL,
-	verse INTEGER NOT NULL,
-	content TEXT NOT NULL
-	)`) 
-	if err != nil {
-		fmt.Println("error creating table...")
-		panic(err.Error())
-	}
-	// reReference := regexp.MustCompile(`[A-Z]{3}\.[1-9]+\.[1-9]+`)
-	// reSplitter := regexp.MustCompile(`\.`)
-	reContent := regexp.MustCompile(`Content: (.+)`)
-	scanner := readByLine("pkg/parser/fbv.txt")
-
-	fmt.Println(scanner.Text())
-	for scanner.Scan() {
-		// fmt.Println(scanner.Text())
-		// reference := reSplitter.Split(string(reReference.Find([]byte(scanner.Text()))), -1)
-		content := reContent.FindSubmatch([]byte(scanner.Text()))
-		fmt.Println(string(content[1]))
-		// fmt.Println(string(re.Find([]byte(scanner.Text()))))
-	}
-	return nil	
-}
-
-func readByLine(filename string) *bufio.Scanner {
-	// fmt.Println(os.Getwd())
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Println("error opening Bible file...")
-	}
-	// defer file.Close()
-	
-	scanner := bufio.NewScanner(file)
-	// for scanner.Scan() {
-	// 	fmt.Print(scanner.Text());
-	// }
-	return scanner
-}
-
-func getKjvData(directory string) error {
-	return nil
-}
-
+// Helper function to create a file path from multiple parts
+// Returns a completed file path
 func makeFilePath(part ...string) string {
 	filePath := ""
 	for i, fp := range part {
@@ -281,6 +235,8 @@ func makeFilePath(part ...string) string {
 	return filePath
 }
 
+// Reads the correct order of books from a file
+// Returns the correct book order and the books in alphabetical order
 func getBookOrder(filepath string) ([]string, []string, error) {
 	content, err := os.ReadFile(filepath)
 	if err != nil {
@@ -293,6 +249,7 @@ func getBookOrder(filepath string) ([]string, []string, error) {
 	return books, orderedBooks, nil
 }
 
+// Saves a given manifest to disk under assets/{insert version here}/manifest.json
 func saveManifest(manifest BibleManifest) error {
 	file, err := os.Create(fmt.Sprintf("assets/%s/manifest.json", manifest.Version))
 	if err != nil {
@@ -310,4 +267,33 @@ func saveManifest(manifest BibleManifest) error {
 		panic(err.Error())
 	}
 	return err
+}
+
+// Loads the server configuration info from db.config. This avoids having to store the password in this file.
+func dbConfig() string {
+	file, err := os.Open("db.config")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer file.Close()
+	dbInfo := dbConfigInfo{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		raw := strings.Split(scanner.Text(), "=")
+		switch raw[0] {
+		case "username":
+			dbInfo.username = raw[1]
+		case "password":
+			dbInfo.password = raw[1]
+		case "protocol":
+			dbInfo.protocol = raw[1]
+		case "server":
+			dbInfo.server = raw[1]
+		case "port":
+			dbInfo.port = raw[1]
+		case "database":
+			dbInfo.database = raw[1]
+		}
+	}
+	return fmt.Sprintf("%s:%s@%s(%s:%s)/%s", dbInfo.username, dbInfo.password, dbInfo.protocol, dbInfo.server, dbInfo.port, dbInfo.database)
 }
