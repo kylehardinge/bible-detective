@@ -182,13 +182,13 @@ func setupKjv(db *sql.DB) error {
 			chapterJSON := Chapter{}
 				
 			json.Unmarshal(contents, &chapterJSON)
-			numVerses := len(chapterJSON.Verses)
+			numVerses := chapterJSON.Verses[len(chapterJSON.Verses)-1].Verse
 			bookManifest.Chapters = append(bookManifest.Chapters, numVerses)
 			if chapter == 1 {
 				bookManifest.Id = chapterJSON.Verses[0].Book_id
 			}
 			for _, verse := range chapterJSON.Verses {
-				_, err := db.Exec(`INSERT INTO kjv (book_id, book_name, chapter, verse, text) VALUES (?,?,?,?,?);`, verse.Book_id, verse.Book_name, verse.Chapter, verse.Verse, verse.Text)
+				_, err = db.Exec(`INSERT INTO kjv (book_id, book_name, chapter, verse, text) VALUES (?,?,?,?,?);`, verse.Book_id, verse.Book_name, verse.Chapter, verse.Verse, verse.Text)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -197,17 +197,17 @@ func setupKjv(db *sql.DB) error {
 		}
 		kjvManifest.Books = append(kjvManifest.Books, bookManifest)
 	}
-	fmt.Println(kjvManifest)
+	// fmt.Println(kjvManifest)
 	err = saveManifest(kjvManifest)	
 	if err != nil {
 		panic(err.Error())
 	}
 
-	kjvManifestJSON, err := json.MarshalIndent(kjvManifest, "", "\t")
+	// kjvManifestJSON, err := json.MarshalIndent(kjvManifest, "", "\t")
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println(string(kjvManifestJSON))
+	// fmt.Println(string(kjvManifestJSON))
 	fmt.Println("Data has been entered")
 
 	return nil
