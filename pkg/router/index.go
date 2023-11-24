@@ -32,11 +32,19 @@ func Random(c echo.Context) error {
 		panic(err.Error())
 	}
 	return c.JSON(http.StatusOK, map[string]string{
+		"id": fmt.Sprintf("%d", verse.Id),
 		"book_id": verse.Book_id,
 		"book_name": verse.Book_name,
 		"chapter": fmt.Sprintf("%d", verse.Chapter),
 		"verse": fmt.Sprintf("%d", verse.Verse),
 		"text": verse.Text,
+	})
+}
+
+func Manifest(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"stuff": "things",
+		"more_stuff": "things",
 	})
 }
 

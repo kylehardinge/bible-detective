@@ -10,8 +10,10 @@ import (
 	"regexp"
 	// "slices"
 	"sort"
+	"bytes"
 	"strings"
 	"errors"
+	"github.com/schollz/progressbar/v3"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -45,15 +47,16 @@ type Chapter struct {
 }
 
 type BibleManifest struct {
-	Version string
-	Books []BookManifest
+	Version string `json:"version"`
+	Books []BookManifest `json:"books"`
 }
 
 type BookManifest struct {
-	Name string
-	Id string
-	Index string
-	Chapters []ChapterManifest
+	Name string `json:"name"`
+	Id string `json:"id"`
+	Index int `json:"index"`
+	NumChapters int `json:"num_chapters"`
+	Chapters []int `json:"chapters"`
 }
 
 type ChapterManifest struct {
@@ -143,7 +146,7 @@ func setupKjv(db *sql.DB) error {
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println(correctBookOrder)
+	// fmt.Println(correctBookOrder)
 
 	for i, book := range bookList {
 		if book != correctBookSort[i] {
@@ -154,28 +157,37 @@ func setupKjv(db *sql.DB) error {
 	kjvManifest := BibleManifest{}
 	kjvManifest.Version = "KJV"
 	idNumber := 0
-	
+	bar := progressbar.Default(int64(len(correctBookOrder)), "Adding the KJV Bible to the database")
 	for i, book := range correctBookOrder {
 		// fmt.Println(makeFilePath(bookDirectory, book.Name()))
-		fmt.Println(i, book)
+		// fmt.Println(i, book)
 		chapters, err := os.ReadDir(makeFilePath(bookDirectory, book))
 		if err != nil {
 			panic(err.Error())
 		}
+		bookManifest := BookManifest{}
+		bookManifest.Name = book
+		bookManifest.Index = i + 1
+		bar.Add(1)
 		numChapters := len(chapters)	
+		bookManifest.NumChapters = numChapters
+		
 		for chapter := 1; chapter <= numChapters; chapter++ {
 			// fmt.Printf("--%s\n", chapter.Name())
-
 			contents, err := os.ReadFile(makeFilePath(bookDirectory, book, fmt.Sprintf("%d.json", chapter)))
 			if err != nil {
 				panic(err.Error())
 			}
 
-			chapter := Chapter{}
+			chapterJSON := Chapter{}
 				
-			json.Unmarshal(contents, &chapter)
-			
-			for _, verse := range chapter.Verses {
+			json.Unmarshal(contents, &chapterJSON)
+			numVerses := len(chapterJSON.Verses)
+			bookManifest.Chapters = append(bookManifest.Chapters, numVerses)
+			if chapter == 1 {
+				bookManifest.Id = chapterJSON.Verses[0].Book_id
+			}
+			for _, verse := range chapterJSON.Verses {
 				_, err := db.Exec(`INSERT INTO kjv (book_id, book_name, chapter, verse, text) VALUES (?,?,?,?,?);`, verse.Book_id, verse.Book_name, verse.Chapter, verse.Verse, verse.Text)
 				if err != nil {
 					panic(err.Error())
@@ -183,7 +195,19 @@ func setupKjv(db *sql.DB) error {
 				idNumber++
 			}
 		}
+		kjvManifest.Books = append(kjvManifest.Books, bookManifest)
 	}
+	fmt.Println(kjvManifest)
+	err = saveManifest(kjvManifest)	
+	if err != nil {
+		panic(err.Error())
+	}
+
+	kjvManifestJSON, err := json.MarshalIndent(kjvManifest, "", "\t")
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println(string(kjvManifestJSON))
 	fmt.Println("Data has been entered")
 
 	return nil
@@ -267,4 +291,23 @@ func getBookOrder(filepath string) ([]string, []string, error) {
 	copy(books, orderedBooks)
 	sort.Strings(orderedBooks)
 	return books, orderedBooks, nil
+}
+
+func saveManifest(manifest BibleManifest) error {
+	file, err := os.Create(fmt.Sprintf("assets/%s/manifest.json", manifest.Version))
+	if err != nil {
+		panic(err.Error())
+	}
+	defer file.Close()
+	
+	manifestJSON, err := json.MarshalIndent(manifest, "", "\t")
+	if err != nil {
+		panic(err.Error())
+	}
+	manifestReader := bytes.NewReader(manifestJSON)
+	_, err = io.Copy(file, manifestReader)
+	if err != nil {
+		panic(err.Error())
+	}
+	return err
 }
