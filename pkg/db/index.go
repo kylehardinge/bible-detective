@@ -25,7 +25,7 @@ import (
 
 // Allows for the representation of a bible verse
 // Used for importing the kjv Bible from json
-type Verse struct {
+type ImportVerse struct {
 	Book_id string `json:"book_id"`
 	Book_name string `json:"book_name"`
 	Chapter int `json:"chapter"`
@@ -34,7 +34,7 @@ type Verse struct {
 }
 
 // Allows for the representation of a bible verse
-type RandomVerse struct {
+type Verse struct {
 	Id int `json:"id"`
 	Book_id string `json:"book_id"`
 	Book_name string `json:"book_name"`
@@ -43,12 +43,24 @@ type RandomVerse struct {
 	Text string `json:"text"`
 }
 
-// Allows for the representation of a Chapter
-// Used for importing the kjv Bible from json
+// Allows for the representation of a bible verse
 type Chapter struct {
 	Header string `json:"header"`
 	Footer string `json:"footer"`
 	Verses []Verse `json:"verses"`
+}
+
+// Allows for the representation of a bible verse
+type VerseGroup struct {
+	Verses []Verse `json:"verses"`
+}
+
+// Allows for the representation of a ImportChapter
+// Used for importing the kjv Bible from json
+type ImportChapter struct {
+	Header string `json:"header"`
+	Footer string `json:"footer"`
+	Verses []ImportVerse `json:"verses"`
 }
 
 // Used for the creation of a Bible manifest
@@ -188,7 +200,7 @@ func setupKjv(db *sql.DB) error {
 				panic(err.Error())
 			}
 
-			chapterJSON := Chapter{}
+			chapterJSON := ImportChapter{}
 				
 			json.Unmarshal(contents, &chapterJSON)
 			numVerses := chapterJSON.Verses[len(chapterJSON.Verses)-1].Verse

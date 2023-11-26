@@ -14,6 +14,10 @@ Here's the [website](https://go.dev/) for info on how to do that for your operat
 You will also need to install Node.js to be able to make the tailwind portion of the webiste work.
 Here's the [website](https://nodejs.org/en/) for where you can download that to your operating system.
 
+## MYSQL
+
+You are going to need MYSQL for the servers database. The website to download it is [here](https://dev.mysql.com/downloads/mysql/). Follow the installation instructions and change the root password.
+
 ## The Project
 
 Clone this repo to a place you like on your computer.
@@ -34,7 +38,8 @@ If you are using VSCode, there are some helpful plugins you should install if yo
 * Tailwind CSS IntelliSense: Allows for autocompletion of tailwind styles
 * Prettier: Allows for sorting of css classess
 
-
+## Password configuration
+Copy the `db.config.example` file and rename it to `db.config`.
 
 ## Project Dependencies
 

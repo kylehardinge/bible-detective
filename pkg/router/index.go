@@ -3,11 +3,16 @@ package router
 
 import (
 	"bible-detective/site/pkg/db"
+	"bible-detective/site/pkg/parser"
 	"bible-detective/site/pkg/storage"
 	"fmt"
-	"net/http"
+	"strconv"
+
+	// "fmt"
 	"math/rand"
-	
+	"net/http"
+
+	// "strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -31,17 +36,17 @@ func Random(c echo.Context) error {
 	if err := count.Scan(&length); err != nil {
 		panic(err.Error())
 	}
-	
+
 	// Generate a random verse id [1, max id number]
 	verse_id := rand.Intn(length) + 1
 
 	// Get a verse based on the random id number
-	var verse db.RandomVerse
+	verse := db.Verse{}
 	content := db.Db.QueryRow(`SELECT * FROM kjv WHERE id=?`, verse_id)
 	if err := content.Scan(&verse.Id, &verse.Book_id, &verse.Book_name, &verse.Chapter, &verse.Verse, &verse.Text); err != nil {
 		panic(err.Error())
 	}
-	
+
 	// Return the random bible verse in json format
 	return c.JSON(http.StatusOK, verse)
 }
@@ -56,29 +61,94 @@ func Manifest(c echo.Context) error {
 	// fmt.Println(string(kjvManifest))
 	return c.JSON(http.StatusOK, kjvManifest)
 }
+func apiById(c echo.Context, query string) error {
+	id := c.QueryParam("id")
+
+	// Get a verse based on the random id number
+	verse := db.Verse{}
+	content := db.Db.QueryRow(`SELECT * FROM kjv WHERE id=?`, id)
+	if err := content.Scan(&verse.Id, &verse.Book_id, &verse.Book_name, &verse.Chapter, &verse.Verse, &verse.Text); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Verse not found"})
+	}
+	return c.JSON(http.StatusOK, verse)
+}
 
 // The function corresponding with the "/api/:query" route
 // TODO: allow requests for specific verses or chapters
+func apiByVerse(c echo.Context, query string) error {
+	bookQuery, chapterQuery, verseQuery := parser.SplitQuery(query)
+	fmt.Print("This is hte verse query: ")
+	fmt.Println(verseQuery)
+	if bookQuery != "" && chapterQuery != "" && len(verseQuery) == 1 && verseQuery[0] == "" {
+		verse := db.Verse{}
+		verseText := db.Db.QueryRow(`SELECT * FROM kjv WHERE book_id=? AND chapter=? AND verse=?`, bookQuery, chapterQuery, verseQuery[0])
+
+		if err := verseText.Scan(&verse.Id, &verse.Book_id, &verse.Book_name, &verse.Chapter, &verse.Verse, &verse.Text); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Verse not found"})
+		}
+
+		// Return the random bible verse in json format
+		return c.JSON(http.StatusOK, verse)
+	}
+
+	if bookQuery != "" && chapterQuery != "" && len(verseQuery) == 2 {
+		verseGroup := db.VerseGroup{}
+		startVerse, err := strconv.Atoi(verseQuery[0])
+		if err != nil {
+			panic(err.Error())
+		}
+		endVerse, err := strconv.Atoi(verseQuery[1])
+		if err != nil {
+			panic(err.Error())
+		}
+		for i := startVerse; i <= endVerse; i++ {
+
+			verse := db.Verse{}
+			verseText := db.Db.QueryRow(`SELECT * FROM kjv WHERE book_id=? AND chapter=? AND verse=?`, bookQuery, chapterQuery, i)
+
+			if err := verseText.Scan(&verse.Id, &verse.Book_id, &verse.Book_name, &verse.Chapter, &verse.Verse, &verse.Text); err != nil {
+				return c.JSON(http.StatusBadRequest, map[string]string{"error": "Verse not found"})
+			}
+			verseGroup.Verses = append(verseGroup.Verses, verse)
+		}
+		// Return the random bible verse in json format
+		return c.JSON(http.StatusOK, verseGroup)
+	}
+
+	if bookQuery != "" && chapterQuery != "" && len(verseQuery) == 0 {
+		verseGroup := db.VerseGroup{}
+		verseTexts, err := db.Db.Query(`SELECT * FROM kjv WHERE book_id=? AND chapter=?`, bookQuery, chapterQuery)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Verse not found"})
+		}
+		for verseTexts.Next() {
+			verse := db.Verse{}
+
+			if err := verseTexts.Scan(&verse.Id, &verse.Book_id, &verse.Book_name, &verse.Chapter, &verse.Verse, &verse.Text); err != nil {
+				return c.JSON(http.StatusBadRequest, map[string]string{"error": "Verse not found"})
+			}
+			verseGroup.Verses = append(verseGroup.Verses, verse)
+		}
+		// Return the random bible verse in json format
+		return c.JSON(http.StatusOK, verseGroup)
+	}
+
+	return c.JSON(http.StatusBadRequest, map[string]string{"error": "Requests should be in the format 'book chapter:verse-verse' or 'byid?id=1234'"})
+}
+
 func Api(c echo.Context) error {
-	
-	verseBook := c.QueryParam("book")
-	verseChapter := c.QueryParam("chapter")
-	verseVerse := c.QueryParam("verse")
-	
-	dataType := c.Param("verse")
+	query := c.Param("query")
+	if query == "byid" {
+		err := apiById(c, "query")
+		if err != nil {
+			panic(err.Error())
+		}
 
-	if dataType == "string" {
-		return c.String(http.StatusOK, fmt.Sprintf("you are requesting the verse %s %s:%s\n", verseBook, verseChapter, verseVerse))
+	} else {
+		err := apiByVerse(c, query)
+		if err != nil {
+			panic(err.Error())
+		}
 	}
-
-	if dataType == "json" {
-		return c.JSON(http.StatusOK, map[string]string{
-			"book": verseBook,
-			"chapter": verseChapter,
-			"verse": verseVerse,
-			"content": "For God so loved the world...",
-		})
-	}
-
-	return c.JSON(http.StatusBadRequest, map[string]string { "error": dataType })
+	return nil
 }
