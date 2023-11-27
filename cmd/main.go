@@ -56,7 +56,7 @@ func main() {
 	// Routes for the api
 	api := e.Group("/api")
 	api.GET("/random", router.Random)
-	api.GET("/manifest", router.Random)
+	api.GET("/manifest", router.Manifest)
 	api.GET("/:query", router.Api)
 
 	// General routes

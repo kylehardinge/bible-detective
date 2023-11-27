@@ -61,6 +61,7 @@ func Manifest(c echo.Context) error {
 	// fmt.Println(string(kjvManifest))
 	return c.JSON(http.StatusOK, kjvManifest)
 }
+
 func apiById(c echo.Context, query string) error {
 	id := c.QueryParam("id")
 
