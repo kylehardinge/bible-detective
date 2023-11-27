@@ -80,7 +80,7 @@ func apiByVerse(c echo.Context, query string) error {
 	bookQuery, chapterQuery, verseQuery := parser.SplitQuery(query)
 	fmt.Print("This is hte verse query: ")
 	fmt.Println(verseQuery)
-	if bookQuery != "" && chapterQuery != "" && len(verseQuery) == 1 && verseQuery[0] == "" {
+	if bookQuery != "" && chapterQuery != "" && len(verseQuery) == 1 && verseQuery[0] != "" {
 		verse := db.Verse{}
 		verseText := db.Db.QueryRow(`SELECT * FROM kjv WHERE book_id=? AND chapter=? AND verse=?`, bookQuery, chapterQuery, verseQuery[0])
 
