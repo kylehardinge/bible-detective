@@ -1,16 +1,17 @@
 package db
 
 import (
+	"bufio"
+	"bytes"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"sort"
-	"bytes"
 	"strings"
-	"bufio"
-	"errors"
+
 	"github.com/schollz/progressbar/v3"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -26,27 +27,27 @@ import (
 // Allows for the representation of a bible verse
 // Used for importing the kjv Bible from json
 type ImportVerse struct {
-	Book_id string `json:"book_id"`
+	Book_id   string `json:"book_id"`
 	Book_name string `json:"book_name"`
-	Chapter int `json:"chapter"`
-	Verse int `json:"verse"`
-	Text string `json:"text"`
+	Chapter   int    `json:"chapter"`
+	Verse     int    `json:"verse"`
+	Text      string `json:"text"`
 }
 
 // Allows for the representation of a bible verse
 type Verse struct {
-	Id int `json:"id"`
-	Book_id string `json:"book_id"`
+	Id        int    `json:"id"`
+	Book_id   string `json:"book_id"`
 	Book_name string `json:"book_name"`
-	Chapter int `json:"chapter"`
-	Verse int `json:"verse"`
-	Text string `json:"text"`
+	Chapter   int    `json:"chapter"`
+	Verse     int    `json:"verse"`
+	Text      string `json:"text"`
 }
 
 // Allows for the representation of a bible verse
 type Chapter struct {
-	Header string `json:"header"`
-	Footer string `json:"footer"`
+	Header string  `json:"header"`
+	Footer string  `json:"footer"`
 	Verses []Verse `json:"verses"`
 }
 
@@ -58,23 +59,23 @@ type VerseGroup struct {
 // Allows for the representation of a ImportChapter
 // Used for importing the kjv Bible from json
 type ImportChapter struct {
-	Header string `json:"header"`
-	Footer string `json:"footer"`
+	Header string        `json:"header"`
+	Footer string        `json:"footer"`
 	Verses []ImportVerse `json:"verses"`
 }
 
 // Used for the creation of a Bible manifest
 type BibleManifest struct {
-	Version string `json:"version"`
-	Books []BookManifest `json:"books"`
+	Version string         `json:"version"`
+	Books   []BookManifest `json:"books"`
 }
 
 type BookManifest struct {
-	Name string `json:"name"`
-	Id string `json:"id"`
-	Index int `json:"index"`
-	NumChapters int `json:"num_chapters"`
-	Chapters []int `json:"chapters"`
+	Name        string `json:"name"`
+	Id          string `json:"id"`
+	Index       int    `json:"index"`
+	NumChapters int    `json:"num_chapters"`
+	Chapters    []int  `json:"chapters"`
 }
 
 type ChapterManifest struct {
@@ -87,8 +88,8 @@ type dbConfigInfo struct {
 	username string
 	password string
 	protocol string
-	server string
-	port string
+	server   string
+	port     string
 	database string
 }
 
@@ -124,7 +125,7 @@ func InitDb() {
 // Checks if the database needs seeding
 func seedData(db *sql.DB) error {
 	result := db.QueryRow("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'kjv'")
-	
+
 	var name string
 	err := result.Scan(&name)
 	if err != nil && name == "" {
@@ -146,7 +147,7 @@ func setupKjv(db *sql.DB) error {
 	chapter INTEGER NOT NULL,
 	verse INTEGER NOT NULL,
 	text TEXT NOT NULL
-	)`) 
+	)`)
 	if err != nil {
 		fmt.Println("error creating table...")
 		panic(err.Error())
@@ -162,7 +163,7 @@ func setupKjv(db *sql.DB) error {
 	for _, book := range books {
 		bookList = append(bookList, book.Name())
 	}
-	
+
 	correctBookOrder, correctBookSort, err := getBookOrder("assets/kjv/bookOrder.csv")
 	if err != nil {
 		panic(err.Error())
@@ -190,9 +191,9 @@ func setupKjv(db *sql.DB) error {
 		bookManifest.Name = book
 		bookManifest.Index = i + 1
 		bar.Add(1)
-		numChapters := len(chapters)	
+		numChapters := len(chapters)
 		bookManifest.NumChapters = numChapters
-		
+
 		for chapter := 1; chapter <= numChapters; chapter++ {
 			// fmt.Printf("--%s\n", chapter.Name())
 			contents, err := os.ReadFile(makeFilePath(bookDirectory, book, fmt.Sprintf("%d.json", chapter)))
@@ -201,7 +202,7 @@ func setupKjv(db *sql.DB) error {
 			}
 
 			chapterJSON := ImportChapter{}
-				
+
 			json.Unmarshal(contents, &chapterJSON)
 			numVerses := chapterJSON.Verses[len(chapterJSON.Verses)-1].Verse
 			bookManifest.Chapters = append(bookManifest.Chapters, numVerses)
@@ -219,7 +220,7 @@ func setupKjv(db *sql.DB) error {
 		kjvManifest.Books = append(kjvManifest.Books, bookManifest)
 	}
 	// fmt.Println(kjvManifest)
-	err = saveManifest(kjvManifest)	
+	err = saveManifest(kjvManifest)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -254,7 +255,8 @@ func getBookOrder(filepath string) ([]string, []string, error) {
 	if err != nil {
 		panic(err.Error())
 	}
-	orderedBooks := strings.Split(strings.Split(string(content),"\n")[0], ",")
+	// orderedBooks := strings.Split(strings.Split(strings.Split(string(content), "\n")[0], "\r\n")[0], ",")
+	orderedBooks := strings.Split(strings.Split(string(content), "|")[0], ",")
 	books := make([]string, len(orderedBooks))
 	copy(books, orderedBooks)
 	sort.Strings(orderedBooks)
@@ -268,7 +270,7 @@ func saveManifest(manifest BibleManifest) error {
 		panic(err.Error())
 	}
 	defer file.Close()
-	
+
 	manifestJSON, err := json.MarshalIndent(manifest, "", "\t")
 	if err != nil {
 		panic(err.Error())
