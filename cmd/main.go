@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bible-detective/site/pkg/router"
 	"bible-detective/site/pkg/db"
+	"bible-detective/site/pkg/router"
 	"html/template"
 	"io"
 	"log"
@@ -30,10 +30,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading templates: %v\n", err)
 	}
-	
+
 	// Call to initalize the database and seed data if needed
 	db.InitDb()
-	
+
 	// Initalize a new echo server
 	e := echo.New()
 
@@ -42,7 +42,7 @@ func main() {
 	e.Use(middleware.Recover())
 	// Log requests to the console
 	e.Use(middleware.Logger())
-	
+
 	// Template renderer
 	e.Renderer = &TemplateRenderer{
 		template: templates,
@@ -62,8 +62,8 @@ func main() {
 	// General routes
 	e.GET("/", router.Index)
 	e.GET("/play", router.Play)
+	e.GET("/daily", router.Daily)
 
 	// Start the server on port 42069
 	e.Logger.Fatal(e.Start("localhost:8080"))
 }
-

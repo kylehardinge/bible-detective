@@ -5,9 +5,7 @@ module.exports = {
     screens: {
       sm: "480px"
     },
-    colors: {
-      oranger: "#FF00FF",
-    },
+
     extend: {},
   },
   plugins: [],
