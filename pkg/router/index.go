@@ -29,7 +29,11 @@ func Play(c echo.Context) error {
 
 // The function corresponding with the "/api/random" route
 // Returns a random Bible verse
+// surroundingVerses=0 by default
+// set for number of verses on each side to be able to make the game easier
 func Random(c echo.Context) error {
+	// surroundingVerses := c.QueryParam("surroundingVerses")
+	 
 	// Get number of Bible verses
 	count := db.Db.QueryRow(`SELECT COUNT(*) FROM kjv`)
 	var length int
@@ -39,7 +43,7 @@ func Random(c echo.Context) error {
 
 	// Generate a random verse id [1, max id number]
 	verse_id := rand.Intn(length) + 1
-
+	
 	// Get a verse based on the random id number
 	verse := db.Verse{}
 	content := db.Db.QueryRow(`SELECT * FROM kjv WHERE id=?`, verse_id)
