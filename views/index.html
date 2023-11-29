@@ -7,11 +7,32 @@
 		<link href="/css/tailwind.css" rel="stylesheet" />
 	</head>
 	<body>
-		<main class="bg-[#000000] text-[#282A3A] p-6 font-sans h-screen">
+		<main class="text-[#282A3A] p-6 font-sans h-screen bg-[#303446] text-white">
+		<div class="flex flex-col justify-evenly items-center text-white gap-5 w-full">
 			<h1 class="text-4xl font-bold mb-4">Welcome to Bible Detective!</h1>
-			<a href="/play" class="bg-[#735F32] hover:bg-[#C69749] text-white px-6 py-3 rounded-md shadow-md">Test Your Knowledge of the Bible</a>
+			<div class="flex flex-row justify-center gap-2 items-center text-white w-full">
+				<a href="/play" class="bg-[#949cbb] hover:bg-[#838ba7] text-white px-6 py-3 rounded-md shadow-md">Test Your Knowledge of the Bible</a>
+					<select class="bg-[#949cbb]">
+						<option>KJV</option>
+			 			<option>other</option>
+			 			<option>other 2</option>
+						<option>other 3</option>
+		 			</select>
+			</div>
+		</div>
 
-			<p></p>
+		<div class="flex flex-row justify-evenly items-center text-white gap-5 w-full mt-8">
+				<div class="flex flex-col justify-evenly items-center text-white gap-5 bg bg-[#5c5f77] px-6 py-3 rounded-md shadow-md">
+					<p class="text-2xl">Highscores</p>
+					<p class="text-sm">0 on 11/27/23</p>
+					<p class="text-sm">0 on 11/27/23</p>
+					<p class="text-sm">0 on 11/27/23</p>
+					<p class="text-sm">0 on 11/27/23</p>
+					<p class="text-sm">0 on 11/27/23</p>
+					<p class="text-sm">0 on 11/27/23</p>
+					<p class="text-sm">0 on 11/27/23</p>
+				</div>
+			</div>
 		</main>
 	</body>
 </html>
