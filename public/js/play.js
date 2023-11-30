@@ -94,3 +94,28 @@ getRandomVerse().then(function(result) {
 
 // function autocomplete() {
 // }
+const copyContent = async () => {
+  let textToCopy = `🎉 I just played the daily challenge and got ${scoreText.innerText} points! 🚀\nHow well can you do? 😎\nhttp://theoguessr.com/`
+
+  try {
+      await navigator.clipboard.writeText(textToCopy);
+      console.log('Content copied to clipboard');
+      showModal();
+      setTimeout(closeModal, 2000)
+  } catch (err) {
+      console.error('Failed to copy: ', err);
+  }
+};
+
+const showModal = () => {
+  const modal = document.getElementById('modal');
+  modal.showModal();
+  document.getElementById('closeBtn').addEventListener('click', closeModal);
+};
+
+const closeModal = () => {
+  const modal = document.getElementById('modal');
+  modal.close();
+};
+
+document.getElementById('shareBtn').onclick = copyContent;
