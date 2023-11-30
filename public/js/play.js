@@ -62,7 +62,9 @@ function processGuess() {
     actualReference.innerText = `${verseToGuess.book_name} ${verseToGuess.chapter}:${verseToGuess.verse}`
 
   })
-  guessInput.value = "";
+  guessInputBook.value = "";
+  guessInputChapter.value = "";
+  guessInputVerse.value = "";
 }
 
 getRandomVerse().then(function (result) {
@@ -119,3 +121,38 @@ const closeModal = () => {
 };
 
 document.getElementById('shareBtn').onclick = copyContent;
+
+let bookAutoCompleteValues=[]
+guessInputBook.addEventListener("input", bookAutoComplete);
+
+function bookAutoComplete() {
+  let input = guessInputBook.value.toLowerCase();
+  let books = []
+  if (input == "") {
+    return
+  }
+  
+  for (let manifestBook of manifest.books) {
+    books.push(manifestBook.name.toLowerCase());
+  }
+  books.sort((a, b) => {
+    return mostRelevant(a, b, input)
+  })
+  console.log([books[0], books[1], books[2], books[3], books[4], books[5]])
+  
+}
+
+function mostRelevant(a, b, input) {
+  let indexA = a.search(input);
+  let indexB = b.search(input)
+  if (indexA == -1 && indexB != -1) {
+    return 1
+  } else if (indexB == -1 && indexA != -1) {
+    return -1
+  } else if (indexB == -1 && indexA == -1) {
+    return 0
+  } else {
+    return indexA - indexB
+  }
+}
+
