@@ -14,7 +14,23 @@ guessButton.addEventListener("click", processGuess);
 resetButton.addEventListener("click", resetGame);
 
 async function getRandomVerse() {
-  let response = await fetch("/api/random?contextVerses=3");
+  let difficulty = localStorage.getItem("difficulty")
+  let contextVerses;
+  switch (difficulty) {
+    case "easy":
+      contextVerses = 3
+      break;
+    case null:
+      localStorage.setItem("difficulty", "medium");
+      // FALL THROUGH!
+    case "medium":
+      contextVerses = 1
+      break;
+    case "hard":
+      contextVerses = 0
+      break;
+  }
+  let response = await fetch(`/api/random?contextVerses=${contextVerses}`);
   let verse = await response.json();
   return verse;
 }
