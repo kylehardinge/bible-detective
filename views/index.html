@@ -5,6 +5,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link href="/css/tailwind.css" rel="stylesheet" />
+		<script src="/js/index.js" ></script>
 	</head>
 	<body>
 		<main class=" p-6 font-sans h-screen bg-[#1A213B] text-white">
@@ -15,18 +16,32 @@
 			</div>
 			<div>
 				<div class="mt-3 flex flex-row items-center justify-evenly gap-3">
-					<div class="option easy rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
-					  <input type="radio" id="easy" name="difficulty" value="easy" onchange="changeColor(this)">
-					  <label for="easy">Easy</label>
-					</div>
-					<div class="option medium rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
+					<label for="easy">
+						<div class="option easy rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
+						  <input type="radio" id="easy" name="difficulty" value="easy" class="hidden" onchange="changeColor(this)">
+						  <p>Easy</p>
+						</div>
+					</label>
+					<label for="medium">
+						<div class="option hard rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
+						  <input type="radio" id="medium" name="difficulty" value="medium" class="hidden" onchange="changeColor(this)">
+						  <p>Medium</p>
+						</div>
+					</label>
+					<label for="hard">
+						<div class="option hard rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
+						  <input type="radio" id="hard" name="difficulty" value="hard" class="hidden" onchange="changeColor(this)">
+						  <p>Hard</p>
+						</div>
+					</label>
+					<!-- <div class="option medium rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
 					  <input type="radio" id="medium" name="difficulty" value="medium" checked onchange="changeColor(this)">
 					  <label for="medium">Medium</label>
 					</div>
 					<div class="option hard rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
 					  <input type="radio" id="hard" name="difficulty" value="hard" onchange="changeColor(this)">
 					  <label for="hard">Hard</label>
-					</div>
+					</div> -->
 				</div>
 			</div>
 			<div class="flex flex-row justify-evenly items-center text-white gap-3 w-full mt-3">
@@ -34,7 +49,7 @@
 			</div>
 		</div>
 		<div>
-		<div class="flex flex-row justify-center items-center text-white gap-5 w-full mt-8">
+			<div class="flex flex-row justify-center items-center text-white gap-5 w-full mt-8">
 				<div class="flex flex-col justify-evenly items-center text-white gap-5 bg bg-[#5c5f77] px-6 py-3 rounded-md shadow-md">
 					<p class="text-2xl">Highscores</p>
 					<p class="text-sm">0 on 11/27/23</p>
@@ -50,41 +65,7 @@
 					<p class="break-normal">Welcome to TheoGuessr, the game where you are given a Bible verse and you are tasked to figure out where it is. The rules are straightforward: the closer you are to the Bible verse, the more points you earn. you can earn up to 5000 each round, and your top scores will be displayed in the highscores section. Choose a difficulty level, test your knowledge, or play the daily verse and share your score with friends. Remember that you can switch the Bible version at any time. The difficulty slider adjusts the number of context verses: easy includes 6 context verses, medium has 2, and hard provides no context verses. Enjoy your the journey through the verses!</p>
 				</div>
 			</div>
-			</div>
+		</div>
 		</main>
-		<script> 
-		document.addEventListener('DOMContentLoaded', function () {
-			let difficulty = localStorage.getItem("difficulty");
-			if (difficulty !== null) {
-				let radio = document.querySelector(`.option input[value="${difficulty}"]`);
-				radio.checked = true;
-				changeColor(radio);
-			}
-			});
-
-			function changeColor(radio) {
-			let difficulty = radio.value;
-			localStorage.setItem("difficulty", difficulty);
-			let options = document.querySelectorAll('.option');
-			options.forEach(option => {
-				option.style.backgroundColor = option.contains(radio) && radio.checked
-				? getDifficultyColor(difficulty)
-				: "#48537B";
-			});
-			}
-
-			function getDifficultyColor(difficulty) {
-			switch (difficulty) {
-				case "easy":
-				return "green";
-				case "medium":
-				return "blue";
-				case "hard":
-				return "red";
-				default:
-				return "#48537B";
-			}
-			}
-		  </script>
 	</body>
 </html>

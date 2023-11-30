@@ -1,4 +1,4 @@
-let verseText = document.getElementById("verse-to-guess");
+let verseText = document.getElementById("verse-box");
 let guessInputBook = document.getElementById("guess-input-book");
 let guessInputChapter = document.getElementById("guess-input-chapter");
 let guessInputVerse = document.getElementById("guess-input-verse");
@@ -14,7 +14,23 @@ guessButton.addEventListener("click", processGuess);
 resetButton.addEventListener("click", resetGame);
 
 async function getRandomVerse() {
-  let response = await fetch("/api/random");
+  let difficulty = localStorage.getItem("difficulty")
+  let contextVerses;
+  switch (difficulty) {
+    case "easy":
+      contextVerses = 3
+      break;
+    case null:
+      localStorage.setItem("difficulty", "medium");
+      // FALL THROUGH!
+    case "medium":
+      contextVerses = 1
+      break;
+    case "hard":
+      contextVerses = 0
+      break;
+  }
+  let response = await fetch(`/api/random?contextVerses=${contextVerses}`);
   let verse = await response.json();
   return verse;
 }
@@ -68,31 +84,35 @@ function processGuess() {
   guessInputVerse.value = "";
 }
 
-getRandomVerse().then(function (result) {
-  console.log(result.text);
-  verseToGuess = result;
-  verseText.innerHTML = result.text;
-});
+populateVerse()
 
 function resetGame() {
   scoreText.innerText = "";
   userGuess.innerText = "";
   actualReference.innerText = "";
+  populateVerse()
+}
+function populateVerse() {
   getRandomVerse().then(function (result) {
     console.log(result.text);
     verseToGuess = result;
-    verseText.innerHTML = result.text;
+    let verseHTML = ``
+    for (let verse of result.context) {
+      console.log(verse);
+      if (verse.id === result.id) {
+        verseHTML += `<p class="box-border border-white border-2 text-2xl w-auto h-auto px-6 py-3" id="verse-to-guess">${verse.text}</p>`
+      } else {
+        verseHTML += `<p class="text-2xl w-auto h-auto px-6 py-3">${verse.text}</p>`
+      }
+    }
+    console.log(verseHTML);
+    verseText.innerHTML = verseHTML;
   });
 }
 
 let manifest;
 getManifest().then(function(result) {
   manifest = result
-})
-getRandomVerse().then(function(result) {
-  console.log(result.text)
-  verseToGuess = result
-  verseText.innerHTML = result.text;
 })
 
 // function autocomplete() {
