@@ -15,6 +15,7 @@ import (
 	// "strings"
 
 	"github.com/labstack/echo/v4"
+	// "golang.org/x/net/websocket"
 )
 
 // The function corresponding with the "/" route
@@ -34,11 +35,13 @@ func Daily(c echo.Context) error {
 
 // The function corresponding with the "/api/random" route
 // Returns a random Bible verse
-// surroundingVerses=0 by default
-// set for number of verses on each side to be able to make the game easier
 func Random(c echo.Context) error {
-	// surroundingVerses := c.QueryParam("surroundingVerses")
-
+	context, err := strconv.Atoi(c.QueryParam("contextVerses"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "contextVerses must be a number",
+		})
+	}
 	// Get number of Bible verses
 	count := db.Db.QueryRow(`SELECT COUNT(*) FROM kjv`)
 	var length int
@@ -46,6 +49,7 @@ func Random(c echo.Context) error {
 		panic(err.Error())
 	}
 
+	fmt.Printf("%d\n", length)
 	// Generate a random verse id [1, max id number]
 	verse_id := rand.Intn(length) + 1
 
@@ -54,6 +58,26 @@ func Random(c echo.Context) error {
 	content := db.Db.QueryRow(`SELECT * FROM kjv WHERE id=?`, verse_id)
 	if err := content.Scan(&verse.Id, &verse.Book_id, &verse.Book_name, &verse.Chapter, &verse.Verse, &verse.Text); err != nil {
 		panic(err.Error())
+	}
+
+	startContext := verse_id - context
+	if startContext <= 0 {
+		startContext = 1
+	}
+
+	endContext := verse_id + context
+	if endContext > length {
+		endContext = length
+	}
+
+	fmt.Printf("%d, %d\n", startContext, endContext)
+	for i := startContext; i <= endContext; i++ {
+		contextVerse := db.Verse{}
+		content := db.Db.QueryRow(`SELECT * FROM kjv WHERE id=?`, i)
+		if err := content.Scan(&contextVerse.Id, &contextVerse.Book_id, &contextVerse.Book_name, &contextVerse.Chapter, &contextVerse.Verse, &contextVerse.Text); err != nil {
+			panic(err.Error())
+		}
+		verse.Context = append(verse.Context, contextVerse)
 	}
 
 	// Return the random bible verse in json format
@@ -87,8 +111,8 @@ func apiById(c echo.Context, query string) error {
 // TODO: allow requests for specific verses or chapters
 func apiByVerse(c echo.Context, query string) error {
 	bookQuery, chapterQuery, verseQuery := parser.SplitQuery(query)
-	fmt.Print("This is hte verse query: ")
-	fmt.Println(verseQuery)
+	// fmt.Print("This is hte verse query: ")
+	// fmt.Println(verseQuery)
 	if bookQuery != "" && chapterQuery != "" && len(verseQuery) == 1 && verseQuery[0] != "" {
 		verse := db.Verse{}
 		verseText := db.Db.QueryRow(`SELECT * FROM kjv WHERE book_id=? AND chapter=? AND verse=?`, bookQuery, chapterQuery, verseQuery[0])

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -36,12 +37,13 @@ type ImportVerse struct {
 
 // Allows for the representation of a bible verse
 type Verse struct {
-	Id        int    `json:"id"`
-	Book_id   string `json:"book_id"`
-	Book_name string `json:"book_name"`
-	Chapter   int    `json:"chapter"`
-	Verse     int    `json:"verse"`
-	Text      string `json:"text"`
+	Id        int     `json:"id"`
+	Book_id   string  `json:"book_id"`
+	Book_name string  `json:"book_name"`
+	Chapter   int     `json:"chapter"`
+	Verse     int     `json:"verse"`
+	Text      string  `json:"text"`
+	Context   []Verse `json:"context"`
 }
 
 // Allows for the representation of a bible verse
@@ -169,6 +171,10 @@ func setupKjv(db *sql.DB) error {
 		panic(err.Error())
 	}
 	// fmt.Println(correctBookOrder)
+	removeHints, err := regexp.Compile(`¶|<span style="color:red;">|<\/span>|<em>|<\/em>`)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	for i, book := range bookList {
 		if book != correctBookSort[i] {
@@ -210,7 +216,8 @@ func setupKjv(db *sql.DB) error {
 				bookManifest.Id = chapterJSON.Verses[0].Book_id
 			}
 			for _, verse := range chapterJSON.Verses {
-				_, err = db.Exec(`INSERT INTO kjv (book_id, book_name, chapter, verse, text) VALUES (?,?,?,?,?);`, verse.Book_id, verse.Book_name, verse.Chapter, verse.Verse, verse.Text)
+				noHintText := removeHints.ReplaceAll([]byte(verse.Text), []byte(""))
+				_, err = db.Exec(`INSERT INTO kjv (book_id, book_name, chapter, verse, text) VALUES (?,?,?,?,?);`, verse.Book_id, verse.Book_name, verse.Chapter, verse.Verse, string(noHintText[:]))
 				if err != nil {
 					panic(err.Error())
 				}
