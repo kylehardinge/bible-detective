@@ -7,6 +7,7 @@ let scoreText = document.getElementById("score-box");
 let userGuess = document.getElementById("user-guess");
 let actualReference = document.getElementById("actual-reference");
 let resetButton = document.getElementById("reset-button");
+let bookAutoComp = document.getElementById("book-suggestions");
 let verseToGuess;
 
 guessButton.addEventListener("click", processGuess);
@@ -131,14 +132,14 @@ function bookAutoComplete() {
   if (input == "") {
     return
   }
-  
+
   for (let manifestBook of manifest.books) {
     books.push(manifestBook.name.toLowerCase());
   }
   books.sort((a, b) => {
     return mostRelevant(a, b, input)
   })
-  console.log([books[0], books[1], books[2], books[3], books[4], books[5]])
+  bookAutoComp.innerHTML = `<p>${books[0]}</p><hr><p>${books[1]}</p><hr><p>${books[2]}</p><hr><p>${books[3]}</p><hr><p>${books[4]}</p><hr><p>${books[5]}</p><hr>`
   
 }
 
@@ -156,3 +157,18 @@ function mostRelevant(a, b, input) {
   }
 }
 
+function numAutoComplete(inputItem) {
+  let input = inputItem.value.toLowerCase();
+  let books = []
+  if (input == "") {
+    return
+  }
+
+  for (let manifestBook of manifest.books) {
+    books.push(manifestBook.name.toLowerCase());
+  }
+  books.sort((a, b) => {
+    return mostRelevant(a, b, input)
+  })
+  bookAutoComp.innerHTML = `<p>${books[0]}</p><hr><p>${books[1]}</p><hr><p>${books[2]}</p><hr><p>${books[3]}</p><hr><p>${books[4]}</p><hr><p>${books[5]}</p><hr>`
+}
