@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Bible Detective</title>
+		<title>Theo Guessr</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link href="/css/tailwind.css" rel="stylesheet" />
@@ -12,6 +12,22 @@
 			<h1 class="text-4xl font-bold mb-4">Welcome to TheoGuessr!</h1>
 			<div class="flex flex-row justify-center gap-2 items-center text-white w-full">
 				<a href="/play" class="bg-[#48537B] hover:bg-[#5C5E7B] text-white px-6 py-3 rounded-md shadow-md">Test Your Knowledge of the Bible</a>
+			</div>
+			<div>
+				<div class="mt-3 flex flex-row items-center justify-evenly gap-3">
+					<div class="option easy rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
+					  <input type="radio" id="easy" name="difficulty" value="easy" onchange="changeColor(this)">
+					  <label for="easy">Easy</label>
+					</div>
+					<div class="option medium rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
+					  <input type="radio" id="medium" name="difficulty" value="medium" checked onchange="changeColor(this)">
+					  <label for="medium">Medium</label>
+					</div>
+					<div class="option hard rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
+					  <input type="radio" id="hard" name="difficulty" value="hard" onchange="changeColor(this)">
+					  <label for="hard">Hard</label>
+					</div>
+				</div>
 			</div>
 			<div class="flex flex-row justify-evenly items-center text-white gap-3 w-full mt-3">
 				<a href="/daily" class="bg-[#48537B] hover:bg-[#5C5E7B] text-white px-6 py-3 rounded-md shadow-md">Play the daily Bible verse</a>
@@ -36,5 +52,39 @@
 			</div>
 			</div>
 		</main>
+		<script> 
+		document.addEventListener('DOMContentLoaded', function () {
+			let difficulty = localStorage.getItem("difficulty");
+			if (difficulty !== null) {
+				let radio = document.querySelector(`.option input[value="${difficulty}"]`);
+				radio.checked = true;
+				changeColor(radio);
+			}
+			});
+
+			function changeColor(radio) {
+			let difficulty = radio.value;
+			localStorage.setItem("difficulty", difficulty);
+			let options = document.querySelectorAll('.option');
+			options.forEach(option => {
+				option.style.backgroundColor = option.contains(radio) && radio.checked
+				? getDifficultyColor(difficulty)
+				: "#48537B";
+			});
+			}
+
+			function getDifficultyColor(difficulty) {
+			switch (difficulty) {
+				case "easy":
+				return "green";
+				case "medium":
+				return "blue";
+				case "hard":
+				return "red";
+				default:
+				return "#48537B";
+			}
+			}
+		  </script>
 	</body>
 </html>
