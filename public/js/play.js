@@ -8,6 +8,9 @@ let userGuess = document.getElementById("user-guess");
 let actualReference = document.getElementById("actual-reference");
 let resetButton = document.getElementById("reset-button");
 let bookAutoComp = document.getElementById("book-suggestions");
+let chatperAutoComp = document.getElementById("chapter-suggestions");
+let verseAutoComp = document.getElementById("verse-suggestions");
+
 let verseToGuess;
 
 guessButton.addEventListener("click", processGuess);
@@ -145,6 +148,8 @@ document.getElementById('shareBtn').onclick = copyContent;
 
 let bookAutoCompleteValues=[]
 guessInputBook.addEventListener("input", bookAutoComplete);
+guessInputChapter.addEventListener("input", chapterAutoComplete);
+guessInputVerse.addEventListener("input", verseAutoComplete);
 
 function bookAutoComplete() {
   let input = guessInputBook.value.toLowerCase();
@@ -159,8 +164,7 @@ function bookAutoComplete() {
   books.sort((a, b) => {
     return mostRelevant(a, b, input)
   })
-  bookAutoComp.innerHTML = `<p>${books[0]}</p><hr><p>${books[1]}</p><hr><p>${books[2]}</p><hr><p>${books[3]}</p><hr><p>${books[4]}</p><hr><p>${books[5]}</p><hr>`
-  
+  bookAutoComp.innerHTML = `<p>${books[0]}</p><hr><p>${books[1]}</p><hr><p>${books[2]}</p><hr><p>${books[3]}</p><hr><p>${books[4]}</p><hr><p>${books[5]}</p>`
 }
 
 function mostRelevant(a, b, input) {
@@ -177,6 +181,76 @@ function mostRelevant(a, b, input) {
   }
 }
 
+function numMostRelevant(a, b, input) {
+  let tensA = (Math.floor(a/10)) > 0 ? Math.floor(a/10) : a
+  let tensB = (Math.floor(b/10)) > 0 ? Math.floor(b/10) : b
+  
+  if (tensA == input && tensB != input) {
+  // console.log(`a: ${a} tens: ${tensA} b: ${b} tens: ${tensB} input: ${input} first statement`)
+    return -1
+  } else if (tensB == input && tensA != input) {
+  // console.log(`a: ${a} tens: ${tensA} b: ${b} tens: ${tensB} input: ${input} second statement`)
+    return 1
+  } else if (tensB == input && tensA == input) {
+  // console.log(`a: ${a} tens: ${tensA} b: ${b} tens: ${tensB} input: ${input} third statement`)
+    return b-a
+  } else {
+  // console.log(`a: ${a} tens: ${tensA} b: ${b} tens: ${tensB} input: ${input} fourth statement`)
+    return b - a
+  }
+}
+
+function chapterAutoComplete() {
+  let input = guessInputChapter.value.toLowerCase();
+  let chapters = []
+  if (input == "") {
+    return
+  }
+  if (guessInputBook.value == "") {
+    return
+  }
+  let guessBook = guessInputBook.value; 
+  let book = manifest.books.find(({ name }) => name.toLowerCase() === guessBook.toLowerCase())
+  if (book == undefined) {
+    return;
+  }
+  let numChapters = book.num_chapters
+  for (let i = 1; i <= numChapters; i++) {
+    chapters.push(i);
+  }
+  // console.log(chapters);
+  chapters.sort((a, b) => {
+    return numMostRelevant(a, b, input)
+  })
+  chatperAutoComp.innerHTML = `<p>${chapters[0]}</p><hr><p>${chapters[1]}</p><hr><p>${chapters[2]}</p><hr><p>${chapters[3]}</p><hr><p>${chapters[4]}</p><hr><p>${chapters[5]}</p>`
+}
+function verseAutoComplete() {
+  let input = guessInputChapter.value.toLowerCase();
+  let verses = []
+  if (input == "") {
+    return
+  }
+  if (guessInputBook.value == "") {
+    return
+  }
+  let guessBook = guessInputBook.value; 
+  let guessChapter = guessInputChapter.value;
+  let book = manifest.books.find(({ name }) => name.toLowerCase() === guessBook.toLowerCase())
+  if (book == undefined) {
+    return;
+  }
+  // console.log(book);
+  // console.log(guessChapter);
+  let numVerses = book.chapters[guessChapter-1]
+  for (let i = 1; i <= numVerses; i++) {
+    verses.push(i);
+  }
+  // console.log(verses);
+  verses.sort((a, b) => {
+    return numMostRelevant(a, b, input)
+  })
+  verseAutoComp.innerHTML = `<p>${verses[0]}</p><hr><p>${verses[1]}</p><hr><p>${verses[2]}</p><hr><p>${verses[3]}</p><hr><p>${verses[4]}</p><hr><p>${verses[5]}</p>`
+}
 function numAutoComplete(inputItem) {
   let input = inputItem.value.toLowerCase();
   let books = []
@@ -190,5 +264,5 @@ function numAutoComplete(inputItem) {
   books.sort((a, b) => {
     return mostRelevant(a, b, input)
   })
-  bookAutoComp.innerHTML = `<p>${books[0]}</p><hr><p>${books[1]}</p><hr><p>${books[2]}</p><hr><p>${books[3]}</p><hr><p>${books[4]}</p><hr><p>${books[5]}</p><hr>`
+  bookAutoComp.innerHTML = `<p>${books[0]}</p><hr><p>${books[1]}</p><hr><p>${books[2]}</p><hr><p>${books[3]}</p><hr><p>${books[4]}</p><hr><p>${books[5]}</p>`
 }
