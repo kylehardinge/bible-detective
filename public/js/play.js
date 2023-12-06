@@ -9,6 +9,16 @@ let scoreText = document.getElementById("score-box");
 let userGuess = document.getElementById("user-guess");
 let actualReference = document.getElementById("actual-reference");
 let resetButton = document.getElementById("reset-button");
+let bookAutoComp = document.getElementById("book-suggestions");
+let chatperAutoComp = document.getElementById("chapter-suggestions");
+let verseAutoComp = document.getElementById("verse-suggestions");
+
+let gameWindow = document.getElementById("gaming");
+let scoreWindow = document.getElementById("scoring-window");
+
+gameWindow.style.display = "block";
+scoreWindow.style.display = "none";
+
 
 // What verse are we guessing?
 let verseToGuess;
@@ -93,13 +103,16 @@ function populateVerse() {
 }
 
 function processGuess() {
-	if (guessInputBook.value == "" || guessInputBook.value == "" || guessInputVerse == "") {
-		alert("Please make a guess");
-		return;
-	}
-	let guessBook = nameToId(guessInputBook.value)
-	let guessChapter = guessInputChapter.value;
-	let guessVerse = guessInputVerse.value;
+  if (guessInputBook.value == "" || guessInputBook.value == "" || guessInputVerse == "") {
+    alert("Please make a guess");
+    return;
+  }
+  gameWindow.style.display = "none";
+  scoreWindow.style.display = "block";
+  let guessBook = nameToId(guessInputBook.value)
+  let guessChapter = guessInputChapter.value;
+  let guessVerse = guessInputVerse.value;
+  // console.log(book)
 
 	let guess = `${guessBook} ${guessChapter}:${guessVerse}`
 	getSpecificVerse(guess).then(function(result) {
@@ -120,6 +133,43 @@ function processGuess() {
 	guessInputVerse.value = "";
 }
 
+populateVerse()
+
+function resetGame() {
+  gameWindow.style.display = "block";
+  scoreWindow.style.display = "none";
+  scoreText.innerText = "";
+  userGuess.innerText = "";
+  actualReference.innerText = "";
+  populateVerse()
+}
+function populateVerse() {
+  getRandomVerse().then(function (result) {
+    console.log(result.text);
+    verseToGuess = result;
+    let verseHTML = ``
+    for (let verse of result.context) {
+      console.log(verse);
+      if (verse.id === result.id) {
+        verseHTML += `<p class="box-border border-white border-2 text-2xl w-auto h-auto px-6 py-3" id="verse-to-guess">${verse.text}</p>`
+      } else {
+        verseHTML += `<p class="text-2xl w-auto h-auto px-6 py-3">${verse.text}</p>`
+      }
+    }
+    console.log(verseHTML);
+    verseText.innerHTML = verseHTML;
+  });
+}
+
+let manifest;
+getManifest().then(function(result) {
+  manifest = result
+})
+
+// function autocomplete() {
+// }
+const copyContent = async () => {
+  let textToCopy = `🎉 I just played the daily challenge and got ${scoreText.innerText} points! 🚀\nHow well can you do? 😎\nhttp://theoguessr.com/`
 
 // Copy functions
 
