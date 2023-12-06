@@ -1,4 +1,4 @@
-import { Highscore } from "./highscore";
+// import { Highscore } from "./highscore";
 // The stuff
 let verseText = document.getElementById("verse-box");
 let guessInputBook = document.getElementById("guess-input-book");
@@ -77,10 +77,22 @@ function nameToId(book) {
 
 // Empty scoring text and get new verse for new round
 function resetGame() {
+	gameWindow.style.display = "block";
+	scoreWindow.style.display = "none";
 	scoreText.innerText = "";
 	userGuess.innerText = "";
 	actualReference.innerText = "";
 	populateVerse()
+}
+
+function removeVerseAC() {
+	document.getElementById("verse-autocomplete-list").remove()
+	guessInputChapter.removeEventListener("blur", removeVerseAC);
+}
+
+function removeChapterAC() {
+	document.getElementById("chapter-autocomplete-list").remove()
+	guessInputChapter.removeEventListener("blur", removeChapterAC);
 }
 
 
@@ -133,43 +145,6 @@ function processGuess() {
 	guessInputVerse.value = "";
 }
 
-populateVerse()
-
-function resetGame() {
-  gameWindow.style.display = "block";
-  scoreWindow.style.display = "none";
-  scoreText.innerText = "";
-  userGuess.innerText = "";
-  actualReference.innerText = "";
-  populateVerse()
-}
-function populateVerse() {
-  getRandomVerse().then(function (result) {
-    console.log(result.text);
-    verseToGuess = result;
-    let verseHTML = ``
-    for (let verse of result.context) {
-      console.log(verse);
-      if (verse.id === result.id) {
-        verseHTML += `<p class="box-border border-white border-2 text-2xl w-auto h-auto px-6 py-3" id="verse-to-guess">${verse.text}</p>`
-      } else {
-        verseHTML += `<p class="text-2xl w-auto h-auto px-6 py-3">${verse.text}</p>`
-      }
-    }
-    console.log(verseHTML);
-    verseText.innerHTML = verseHTML;
-  });
-}
-
-let manifest;
-getManifest().then(function(result) {
-  manifest = result
-})
-
-// function autocomplete() {
-// }
-const copyContent = async () => {
-  let textToCopy = `🎉 I just played the daily challenge and got ${scoreText.innerText} points! 🚀\nHow well can you do? 😎\nhttp://theoguessr.com/`
 
 // Copy functions
 
@@ -234,9 +209,7 @@ function chapterAutoComplete() {
 	//   closeAllLists();
 	// });
 	a.appendChild(b);
-	guessInputChapter.addEventListener("blur", () => {
-		document.getElementById("chapter-autocomplete-list").remove()
-	})
+	guessInputChapter.addEventListener("blur", removeChapterAC)
 }
 function verseAutoComplete() {
 	if (guessInputBook.value == "") {
@@ -273,9 +246,7 @@ function verseAutoComplete() {
 	//   closeAllLists();
 	// });
 	a.appendChild(b);
-	guessInputVerse.addEventListener("blur", () => {
-		document.getElementById("verse-autocomplete-list").remove()
-	})
+	guessInputVerse.addEventListener("blur", removeVerseAC);
 }
 function autocomplete(inp, arr) {
 	/*the autocomplete function takes two arguments,
@@ -377,6 +348,8 @@ function autocomplete(inp, arr) {
 
 // Main function
 function main() {
+	gameWindow.style.display = "block";
+	scoreWindow.style.display = "none";
 	populateVerse()
 	document.getElementById('shareBtn').onclick = copyContent;
 
