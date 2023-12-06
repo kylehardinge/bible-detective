@@ -9,15 +9,14 @@ let scoreText = document.getElementById("score-box");
 let userGuess = document.getElementById("user-guess");
 let actualReference = document.getElementById("actual-reference");
 let resetButton = document.getElementById("reset-button");
-let bookAutoComp = document.getElementById("book-suggestions");
-let chatperAutoComp = document.getElementById("chapter-suggestions");
-let verseAutoComp = document.getElementById("verse-suggestions");
+let referenceChapter = document.getElementById("reference-chapter");
+let guessedChapter = document.getElementById("guessed-chapter");
 
 let gameWindow = document.getElementById("gaming");
 let scoreWindow = document.getElementById("scoring-window");
 
-gameWindow.style.display = "block";
-scoreWindow.style.display = "none";
+// gameWindow.style.display = "block";
+// scoreWindow.style.display = "none";
 
 
 // What verse are we guessing?
@@ -28,20 +27,20 @@ let verseToGuess;
 
 // Get a random verse or verses based on difficulty
 async function getRandomVerse() {
-	let difficulty = localStorage.getItem("difficulty")
+	let difficulty = localStorage.getItem("difficulty");
 	let contextVerses;
 	switch (difficulty) {
 		case "easy":
-			contextVerses = 3
+			contextVerses = 3;
 			break;
 		case null:
 			localStorage.setItem("difficulty", "medium");
 		// FALL THROUGH!
 		case "medium":
-			contextVerses = 1
+			contextVerses = 1;
 			break;
 		case "hard":
-			contextVerses = 0
+			contextVerses = 0;
 			break;
 	}
 	let response = await fetch(`/api/random?contextVerses=${contextVerses}`);
@@ -70,7 +69,7 @@ async function getManifest() {
 function nameToId(book) {
 	for (let manifestBook of manifest.books) {
 		if (book == manifestBook.name) {
-			return manifestBook.id
+			return manifestBook.id;
 		}
 	}
 }
@@ -82,16 +81,16 @@ function resetGame() {
 	scoreText.innerText = "";
 	userGuess.innerText = "";
 	actualReference.innerText = "";
-	populateVerse()
+	populateVerse();
 }
 
 function removeVerseAC() {
-	document.getElementById("verse-autocomplete-list").remove()
+	document.getElementById("verse-autocomplete-list").remove();
 	guessInputChapter.removeEventListener("blur", removeVerseAC);
 }
 
 function removeChapterAC() {
-	document.getElementById("chapter-autocomplete-list").remove()
+	document.getElementById("chapter-autocomplete-list").remove();
 	guessInputChapter.removeEventListener("blur", removeChapterAC);
 }
 
@@ -102,12 +101,12 @@ function removeChapterAC() {
 function populateVerse() {
 	getRandomVerse().then(function(result) {
 		verseToGuess = result;
-		let verseHTML = ``
+		let verseHTML = ``;
 		for (let verse of result.context) {
 			if (verse.id === result.id) {
-				verseHTML += `<p class="box-border border-white border-2 text-2xl w-auto h-auto px-6 py-3" id="verse-to-guess">${verse.text}</p>`
+				verseHTML += `<p class="box-border border-white border-2 text-2xl w-auto h-auto px-6 py-3" id="verse-to-guess">${verse.text}</p>`;
 			} else {
-				verseHTML += `<p class="text-2xl w-auto h-auto px-6 py-3">${verse.text}</p>`
+				verseHTML += `<p class="text-2xl w-auto h-auto px-6 py-3">${verse.text}</p>`;
 			}
 		}
 		verseText.innerHTML = verseHTML;
@@ -115,31 +114,51 @@ function populateVerse() {
 }
 
 function processGuess() {
-  if (guessInputBook.value == "" || guessInputBook.value == "" || guessInputVerse == "") {
-    alert("Please make a guess");
-    return;
-  }
-  gameWindow.style.display = "none";
-  scoreWindow.style.display = "block";
-  let guessBook = nameToId(guessInputBook.value)
-  let guessChapter = guessInputChapter.value;
-  let guessVerse = guessInputVerse.value;
-  // console.log(book)
+	if (guessInputBook.value == "" || guessInputBook.value == "" || guessInputVerse == "") {
+		alert("Please make a guess");
+		return;
+	}
+	gameWindow.style.display = "none";
+	scoreWindow.style.display = "block";
+	round += 1; 
+	let guessBook = nameToId(guessInputBook.value);
+	let guessChapter = guessInputChapter.value;
+	let guessVerse = guessInputVerse.value;
 
-	let guess = `${guessBook} ${guessChapter}:${guessVerse}`
+	let guess = `${guessBook} ${guessChapter}:${guessVerse}`;
+	getSpecificVerse(`${nameToId(verseToGuess.book_name)} ${verseToGuess.chapter}`).then(function(result) {
+		console.log(result);
+		let stuffHTML = ""
+		stuffHTML += `<h1 class="text-center"> ${result.verses[0].book_name}</h1>`
+		stuffHTML += `<h2 class="text-center"> Chapter ${result.verses[0].chapter}</h2>`
+		for (let verse of result.verses) {
+			stuffHTML += `<p>${verse.verse}: ${verse.text}</p>`
+		}
+		referenceChapter.innerHTML = stuffHTML;
+	});
+	getSpecificVerse(`${guessBook} ${guessChapter}`).then(function(result) {
+		console.log(result);
+		let stuffHTML = ""
+		stuffHTML += `<h1 class="text-center"> ${result.verses[0].book_name}</h1>`
+		stuffHTML += `<h2 class="text-center"> Chapter ${result.verses[0].chapter}</h2>`
+		for (let verse of result.verses) {
+			stuffHTML += `<p>${verse.verse}: ${verse.text}</p>`
+		}
+		guessedChapter.innerHTML = stuffHTML;
+	});
 	getSpecificVerse(guess).then(function(result) {
 
 
-		difference = Math.abs(result.id - verseToGuess.id)
-		let score = Math.abs(5200 * (Math.E ** ((-difference) / 7700)) - 200)
+		difference = Math.abs(result.id - verseToGuess.id);
+		let score = Math.abs(5200 * (Math.E ** ((-difference) / 7700)) - 200);
 		if (difference >= 25100) {
 			score = 0;
 		}
-		scoreText.innerText = Math.round(score)
-		userGuess.innerText = `${result.text} REF: ${result.book_name} ${result.chapter}:${result.verse}`
-		actualReference.innerText = `${verseToGuess.book_name} ${verseToGuess.chapter}:${verseToGuess.verse}`
+		scoreText.innerText = Math.round(score);
+		userGuess.innerText = `${result.text} REF: ${result.book_name} ${result.chapter}:${result.verse}`;
+		actualReference.innerText = `${verseToGuess.book_name} ${verseToGuess.chapter}:${verseToGuess.verse}`;
 
-	})
+	});
 	guessInputBook.value = "";
 	guessInputChapter.value = "";
 	guessInputVerse.value = "";
@@ -150,12 +169,12 @@ function processGuess() {
 
 // Copy a message to the clipboard
 async function copyContent() {
-	let textToCopy = `🎉 I just played the daily challenge and got ${scoreText.innerText} points! 🚀\nHow well can you do? 😎\nhttp://theoguessr.com/`
+	let textToCopy = `🎉 I just played the daily challenge and got ${scoreText.innerText} points! 🚀\nHow well can you do? 😎\nhttp://theoguessr.com/`;
 
 	try {
 		await navigator.clipboard.writeText(textToCopy);
 		showModal();
-		setTimeout(closeModal, 2000)
+		setTimeout(closeModal, 2000);
 	} catch (err) {
 		console.error('Failed to copy: ', err);
 	}
@@ -186,7 +205,7 @@ function chapterAutoComplete() {
 	if (book == undefined) {
 		return;
 	}
-	let numChapters = book.num_chapters
+	let numChapters = book.num_chapters;
 
 	/*create a DIV element that will contain the items (values):*/
 	a = document.createElement("DIV");
@@ -200,23 +219,16 @@ function chapterAutoComplete() {
 	b.innerHTML = "1-" + numChapters;
 	/*insert a input field that will hold the current array item's value:*/
 	b.innerHTML += "<input type='hidden' value='1-" + numChapters + "'>";
-	/*execute a function when someone clicks on the item value (DIV element):*/
-	// b.addEventListener("click", function(e) {
-	//   /*insert the value for the autocomplete text field:*/
-	//   inp.value = this.getElementsByTagName("input")[0].value;
-	//   /*close the list of autocompleted values,
-	//   (or any other open lists of autocompleted values:*/
-	//   closeAllLists();
-	// });
 	a.appendChild(b);
-	guessInputChapter.addEventListener("blur", removeChapterAC)
+	guessInputChapter.addEventListener("blur", removeChapterAC);
 }
+
 function verseAutoComplete() {
 	if (guessInputBook.value == "") {
-		return
+		return;
 	}
 	if (guessInputChapter.value == "") {
-		return
+		return;
 	}
 	let guessBook = guessInputBook.value;
 	let guessChapter = guessInputChapter.value;
@@ -224,7 +236,7 @@ function verseAutoComplete() {
 	if (book == undefined) {
 		return;
 	}
-	let numVerses = book.chapters[guessChapter - 1]
+	let numVerses = book.chapters[guessChapter - 1];
 	/*create a DIV element that will contain the items (values):*/
 	a = document.createElement("DIV");
 	a.setAttribute("id", "verse-autocomplete-list");
@@ -237,14 +249,6 @@ function verseAutoComplete() {
 	b.innerHTML = "1-" + numVerses;
 	/*insert a input field that will hold the current array item's value:*/
 	b.innerHTML += "<input type='hidden' value='" + numVerses + "'>";
-	/*execute a function when someone clicks on the item value (DIV element):*/
-	// b.addEventListener("click", function(e) {
-	//   /*insert the value for the autocomplete text field:*/
-	//   inp.value = this.getElementsByTagName("input")[0].value;
-	//   /*close the list of autocompleted values,
-	//   (or any other open lists of autocompleted values:*/
-	//   closeAllLists();
-	// });
 	a.appendChild(b);
 	guessInputVerse.addEventListener("blur", removeVerseAC);
 }
@@ -350,7 +354,7 @@ function autocomplete(inp, arr) {
 function main() {
 	gameWindow.style.display = "block";
 	scoreWindow.style.display = "none";
-	populateVerse()
+	populateVerse();
 	document.getElementById('shareBtn').onclick = copyContent;
 
 	// guessInputBook.addEventListener("input", bookAutoComplete);
@@ -358,14 +362,15 @@ function main() {
 	guessInputVerse.addEventListener("focus", verseAutoComplete);
 	guessButton.addEventListener("click", processGuess);
 	resetButton.addEventListener("click", resetGame);
-	let bookList = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi", "Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"]
+	let bookList = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi", "Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"];
 
-	autocomplete(guessInputBook, bookList)
+	autocomplete(guessInputBook, bookList);
 }
 
 
+let round = 0;
 let manifest;
 getManifest().then(function(result) {
-	manifest = result
+	manifest = result;
 })
-main(manifest)
+main(manifest);
