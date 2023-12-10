@@ -21,6 +21,7 @@ let scoreWindow = document.getElementById("scoring-window");
 
 // What verse are we guessing?
 let verseToGuess;
+let totalScore = 0;
 
 
 // API calls
@@ -114,7 +115,7 @@ function populateVerse() {
 }
 
 function processGuess() {
-	if (guessInputBook.value == "" || guessInputBook.value == "" || guessInputVerse == "") {
+	if (guessInputBook.value == "" || guessInputChapter.value == "" || guessInputVerse.value == "") {
 		alert("Please make a guess");
 		return;
 	}
