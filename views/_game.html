@@ -24,6 +24,9 @@
                         class="bg-[#59a825] hover:bg-[#559732] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl"
                         id="enter-guess">Enter Guess</button>
                 </div>
+                <div>
+                    <p>Round <span id="round-number"></span>/5</p>
+                </div>
             </div>
             <div id="scoring-window">
                 <div class="flex">
@@ -44,8 +47,28 @@
                         <button type="button"
                             class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl"
                             id="reset-button">Next Round</button>
+                        <!-- <button id="shareBtn" type="button"
+                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl">Share!</button> -->
+                    </div>
+                    <!-- <dialog id="modal"
+                        class="bg-[#44507F] transition-all text-white mt-1 px-5 py-5 rounded-md shadow-md gap-1 text-2xl">
+                        <p>Successfully copied to clipboard!</p>
+                        <button hidden id="closeBtn" type="button"
+                            class="hover:bg-[#5C5E7B]"></button>
+                    </dialog> -->
+                </div>
+            </div>
+            <div id="finish-window">
+                <div class="flex justify-around gap-5 text-2xl">
+                    <div>
+                        <p>Your Final Score is: <span id="final-score-box"></span></p>
+                    </div>
+                    <div class="flex justify-center gap-5 text-2xl">
+                        <button type="button"
+                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl"
+                            id="new-game-button">New Game</button>
                         <button id="shareBtn" type="button"
-                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl">Share!</button>
+                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl">Share Game!</button>
                     </div>
                     <dialog id="modal"
                         class="bg-[#44507F] transition-all text-white mt-1 px-5 py-5 rounded-md shadow-md gap-1 text-2xl">

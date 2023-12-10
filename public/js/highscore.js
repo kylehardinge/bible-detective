@@ -1,5 +1,5 @@
 
-export class Highscore {
+export default class Highscore {
 	constructor() {
 		this.storage = localStorage.getItem("highscores")
 		if (this.storage == null) {

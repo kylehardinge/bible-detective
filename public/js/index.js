@@ -1,3 +1,9 @@
+function populateHighscores() {
+    let highscores = JSON.parse(localStorage.getItem("highscores")) || []
+    return highscores.map(score => {
+        return `<li class="text-sm">${score.score} on ${score.date} on Difficulty ${score.difficulty}</li>`
+    }).join("");
+}
 document.addEventListener("DOMContentLoaded", function () {
     let difficulty = localStorage.getItem("difficulty");
     if (difficulty !== null) {
@@ -33,3 +39,6 @@ function getDifficultyColor(difficulty) {
             return "#48537B";
     }
 }
+
+document.getElementById("highscores").innerHTML = populateHighscores();
+
