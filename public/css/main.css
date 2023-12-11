@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+.autocomplete-numbers,
 .autocomplete-items {
     position: absolute;
     border: 1px solid #d4d4d4;
@@ -13,12 +14,14 @@
     left: 0;
     right: 0;
 }
+.autocomplete-numbers div,
 .autocomplete-items div {
     padding: 10px;
     cursor: pointer;
     background-color: #44507F;
     border-bottom: 1px solid #d4d4d4;
 }
+.autocomplete-numbers div:hover,
 .autocomplete-items div:hover {
     /*when hovering an item:*/
     background-color: #1c37a5;

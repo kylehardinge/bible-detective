@@ -32,6 +32,10 @@ func Play(c echo.Context) error {
 func Daily(c echo.Context) error {
 	return c.Render(http.StatusOK, "daily.html", nil)
 }
+// The function corresponding with the "/" route
+func Test(c echo.Context) error {
+	return c.Render(http.StatusOK, "test.html", nil)
+}
 
 // The function corresponding with the "/api/random" route
 // Returns a random Bible verse

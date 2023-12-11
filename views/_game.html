@@ -1,8 +1,6 @@
 <main class="flex h-screen w-screen text-white">
-    <div
-        class="flex flex-row justify-evenly items-center bg-[#1A213B] p-6 gap-5 h-screen w-screen text-2xl">
-        <div
-            class=" bg-[#5c6688] px-6 py-3 rounded-md shadow-md w-3/4 text-2xl">
+    <div class="flex flex-row justify-evenly items-center bg-[#1A213B] p-6 gap-5 h-screen w-screen text-2xl">
+        <div class=" bg-[#5c6688] px-6 py-3 rounded-md shadow-md w-3/4 text-2xl">
             <div id="gaming">
                 <div id="verse-box">
                 </div>
@@ -11,14 +9,20 @@
                 <!-- <p>For “you were like sheep going astray,” but now you have returned to the Shepherd and Overseer of your souls.</p> -->
                 <div class="flex justify-center items-center gap-5 text-2xl">
                     <div class="relative inline-block">
-                        <input type="text" class="bg-[#44507F] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl" id="guess-input-book">
+                        <input type="text"
+                            class="bg-[#44507F] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl"
+                            id="guess-input-book">
                     </div>
                     <div class="relative inline-block">
-                        <input type="text" class="bg-[#44507F] text-white mt-1 px-1 py-1 w-16 rounded-md shadow-md text-2xl" id="guess-input-chapter" maxlength="3">
+                        <input type="text"
+                            class="bg-[#44507F] text-white mt-1 px-1 py-1 w-16 rounded-md shadow-md text-2xl"
+                            id="guess-input-chapter" maxlength="3">
                     </div>
-                        <p class="text-white py-1 text-6xl text-center">:</p>
+                    <p class="text-white py-1 text-6xl text-center">:</p>
                     <div class="relative inline-block">
-                        <input type="text" class="bg-[#44507F] text-white mt-1 px-1 py-1 w-16 rounded-md shadow-md text-2xl" id="guess-input-verse" maxlength="3">
+                        <input type="text"
+                            class="bg-[#44507F] text-white mt-1 px-1 py-1 w-16 rounded-md shadow-md text-2xl"
+                            id="guess-input-verse" maxlength="3">
                     </div>
                     <button type="button"
                         class="bg-[#59a825] hover:bg-[#559732] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl"
@@ -29,26 +33,18 @@
                 </div>
             </div>
             <div id="scoring-window">
-                <div class="flex">
-                    <div id="reference-chapter" class="overflow-auto h-96">
+                <div class="flex border border-white p-0.5">
+                    <div id="reference-chapter" class="overflow-auto w-1/2 h-96">
                     </div>
                     <div id="guessed-chapter" class="overflow-auto w-1/2 h-96">
                     </div>
-                    
+
                 </div>
                 <div class="flex justify-around gap-5 text-2xl">
                     <div>
                         <p>Your Score is: <span id="score-box"></span></p>
                         <p id="user-guess"></p>
-                        <p>The actual verse reference is: <span
-                                id="actual-reference"></span></p>
-                    </div>
-                    <div class="flex justify-center gap-5 text-2xl">
-                        <button type="button"
-                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl"
-                            id="reset-button">Next Round</button>
-                        <!-- <button id="shareBtn" type="button"
-                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl">Share!</button> -->
+                        <p>The actual verse reference is: <span id="actual-reference"></span></p>
                     </div>
                     <!-- <dialog id="modal"
                         class="bg-[#44507F] transition-all text-white mt-1 px-5 py-5 rounded-md shadow-md gap-1 text-2xl">
@@ -56,6 +52,13 @@
                         <button hidden id="closeBtn" type="button"
                             class="hover:bg-[#5C5E7B]"></button>
                     </dialog> -->
+                </div>
+                <div class="flex justify-center gap-5 text-2xl">
+                    <button type="button"
+                        class="bg-[#59a825] hover:bg-[#559732] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl"
+                        id="reset-button">Next Round</button>
+                    <!-- <button id="shareBtn" type="button"
+                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl">Share!</button> -->
                 </div>
             </div>
             <div id="finish-window">
@@ -68,13 +71,13 @@
                             class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl"
                             id="new-game-button">New Game</button>
                         <button id="shareBtn" type="button"
-                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl">Share Game!</button>
+                            class="bg-[#44507F] hover:bg-[#5C5E7B] text-white mt-1 px-1 py-1 rounded-md shadow-md gap-1 text-2xl">Share
+                            Game!</button>
                     </div>
                     <dialog id="modal"
                         class="bg-[#44507F] transition-all text-white mt-1 px-5 py-5 rounded-md shadow-md gap-1 text-2xl">
                         <p>Successfully copied to clipboard!</p>
-                        <button hidden id="closeBtn" type="button"
-                            class="hover:bg-[#5C5E7B]"></button>
+                        <button hidden id="closeBtn" type="button" class="hover:bg-[#5C5E7B]"></button>
                     </dialog>
                 </div>
             </div>
@@ -82,5 +85,5 @@
     </div>
     <script>
 
-</script>
+    </script>
 </main>

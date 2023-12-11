@@ -63,6 +63,7 @@ func main() {
 	e.GET("/", router.Index)
 	e.GET("/play", router.Play)
 	e.GET("/daily", router.Daily)
+	e.GET("/test", router.Test)
 
 	// Start the server on port 42069
 	e.Logger.Fatal(e.Start("localhost:8080"))
