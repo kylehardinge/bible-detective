@@ -3,18 +3,20 @@ let verseText = document.getElementById("verse-box");
 let guessInputBook = document.getElementById("guess-input-book");
 let guessInputChapter = document.getElementById("guess-input-chapter");
 let guessInputVerse = document.getElementById("guess-input-verse");
-let guessButton = document.getElementById("enter-guess");
-let scoreText = document.getElementById("score-box");
-let userGuess = document.getElementById("user-guess");
-let actualReference = document.getElementById("actual-reference");
-let resetButton = document.getElementById("reset-button");
+let guessButton = document.getElementById("guess-btn");
+let roundScore = document.getElementById("round-score");
+let totalScoreText = document.getElementById("total-score");
+let finalScoreText = document.getElementById("final-score");
+let userGuess = document.getElementById("guessed-verse");
+let actualReference = document.getElementById("correct-verse");
+let nextRoundButtons = document.getElementsByClassName("next-round-btn");
 let referenceChapter = document.getElementById("reference-chapter");
 let guessedChapter = document.getElementById("guessed-chapter");
 let finishWindow = document.getElementById("finish-window");
-let gameWindow = document.getElementById("gaming");
+let gameWindow = document.getElementById("game-window");
 let scoreWindow = document.getElementById("scoring-window");
-let newGameButton = document.getElementById("new-game-button");
-let finalScore = document.getElementById("final-score-box");
+// let newGameButton = document.getElementById("new-game-button");
+// let finalScore = document.getElementById("final-score-box");
 
 // gameWindow.style.display = "block";
 // scoreWindow.style.display = "none";
@@ -22,6 +24,7 @@ let finalScore = document.getElementById("final-score-box");
 // What verse are we guessing?
 let verseToGuess;
 let totalScore = 0;
+let totalDistance = 0;
 
 // API calls
 
@@ -74,22 +77,42 @@ function nameToId(book) {
     }
 }
 
+function message(score) {
+    if (score == 5000) {
+        return "Excellent!";
+    } else if (score >= 4900) {
+        return "So Close!";
+    } else if (score >= 3000) {
+        return "Good Job!"
+    } else if (score >= 1500) {
+        return "Not Bad!"
+    } else {
+        return "Nice Try!"
+        // return "OT Prophecy!?"
+    }
+
+}
+
 // Empty scoring text and get new verse for new round
 function resetGame() {
-    gameWindow.style.display = "block";
+    gameWindow.style.display = "flex";
     scoreWindow.style.display = "none";
     finishWindow.style.display = "none";
-    scoreText.innerText = "";
+    roundScore.innerText = "";
     userGuess.innerText = "";
     actualReference.innerText = "";
     populateVerse();
 }
 
 function finishGame() {
+    document.getElementById("footer").classList.add("hidden");
     gameWindow.style.display = "none";
     scoreWindow.style.display = "none";
-    finishWindow.style.display = "block";
-    finalScore.innerText = totalScore;
+    finishWindow.style.display = "flex";
+    finalScoreText.innerText = totalScore.toLocaleString();
+    document.getElementById("tot-distance").innerText = totalDistance.toLocaleString();
+    document.getElementById("avg-distance").innerText = Math.round(totalDistance / 5).toLocaleString();
+
     let highscores = JSON.parse(localStorage.getItem("highscores")) || [];
     highscores.push({ "score": totalScore, "date": new Date().toLocaleDateString(), "difficulty": localStorage.getItem("difficulty") });
     highscores.sort((a, b) => b.score - a.score);
@@ -100,6 +123,7 @@ function finishGame() {
 function newGame() {
     round = 0;
     totalScore = 0;
+    totalDistance = 0;
     resetButton.innerText = "Next Round";
 
     gameWindow.style.display = "block";
@@ -110,12 +134,17 @@ function newGame() {
 }
 function removeVerseAC() {
     document.getElementById("verse-autocomplete-list").remove();
-    guessInputChapter.removeEventListener("blur", removeVerseAC);
+    guessInputVerse.removeEventListener("blur", removeVerseAC);
 }
 
 function removeChapterAC() {
     document.getElementById("chapter-autocomplete-list").remove();
     guessInputChapter.removeEventListener("blur", removeChapterAC);
+}
+
+function removeBookAC() {
+    document.getElementById("book-autocomplete-list").remove();
+    guessInputBook.removeEventListener("blur", removeChapterAC);
 }
 
 
@@ -124,15 +153,15 @@ function removeChapterAC() {
 // Get a random verse and put it on the screen
 function populateVerse() {
     round += 1;
-    document.getElementById("round-number").innerText = round;
+    document.getElementById("round").innerText = round;
     getRandomVerse().then(function(result) {
         verseToGuess = result;
         let verseHTML = ``;
         for (let verse of result.context) {
             if (verse.id === result.id) {
-                verseHTML += `<p class="box-border border-white border-2 text-2xl w-auto h-auto px-6 py-3" id="verse-to-guess">${verse.text}</p>`;
+                verseHTML += `<p class="border-solid border-Green border-2 p-1" id="verse-to-guess">${verse.text}</p>`;
             } else {
-                verseHTML += `<p class="text-2xl w-auto h-auto px-6 py-3">${verse.text}</p>`;
+                verseHTML += `<p class="">${verse.text}</p>`;
             }
         }
         verseText.innerHTML = verseHTML;
@@ -156,45 +185,29 @@ function processGuess() {
         }
 
         let difference = Math.abs(result.id - verseToGuess.id);
+        document.getElementById("distance").innerText = difference.toLocaleString();
+        totalDistance += difference;
         let score = Math.abs(5200 * (Math.E ** ((-difference) / 7700)) - 200);
         if (difference >= 25100) {
             score = 0;
         }
-        scoreText.innerText = Math.round(score);
+        roundScore.innerText = Math.round(score).toLocaleString();
         totalScore += Math.round(score);
-        userGuess.innerText = `${result.text} REF: ${result.book_name} ${result.chapter}:${result.verse}`;
-        actualReference.innerText = `${verseToGuess.book_name} ${verseToGuess.chapter}:${verseToGuess.verse}`;
-
-        getSpecificVerse(`${nameToId(verseToGuess.book_name)} ${verseToGuess.chapter}`).then(function(result) {
-            console.log(result);
-            let stuffHTML = ""
-            stuffHTML += `<h1 class="text-center">The chapter of the verse to guess</h1>`
-            stuffHTML += `<h1 class="text-center">${result.verses[0].book_name}</h1>`
-            stuffHTML += `<h2 class="text-center">Chapter ${result.verses[0].chapter}</h2>`
-            for (let verse of result.verses) {
-                stuffHTML += `<p>${verse.verse}: ${verse.text}</p>`
-            }
-            referenceChapter.innerHTML = stuffHTML;
-        });
-        getSpecificVerse(`${guessBook} ${guessChapter}`).then(function(result) {
-            console.log(result);
-            let stuffHTML = ""
-            stuffHTML += `<h1 class="text-center">The chapter of the verse you guessed</h1>`
-            stuffHTML += `<h1 class="text-center"> ${result.verses[0].book_name}</h1>`
-            stuffHTML += `<h2 class="text-center"> Chapter ${result.verses[0].chapter}</h2>`
-            for (let verse of result.verses) {
-                stuffHTML += `<p>${verse.verse}: ${verse.text}</p>`
-            }
-            guessedChapter.innerHTML = stuffHTML;
-        });
-
-        // round += 1; 
+        totalScoreText.innerText = totalScore.toLocaleString();
+        console.log(message(score))
+        document.getElementById("round-message").innerText = message(score);
+        document.getElementById("correct-reference").innerText = `${verseToGuess.book_name} ${verseToGuess.chapter}:${verseToGuess.verse}`;
+        document.getElementById("correct-verse").innerText = verseToGuess.text;
+        document.getElementById("guessed-reference").innerText = `${result.book_name} ${result.chapter}:${result.verse}`;
+        document.getElementById("guessed-verse").innerText = result.text;
 
         if (round == 5) {
-            resetButton.innerText = "Finish Game";
+            for (let nextRoundButton of nextRoundButtons) {
+                nextRoundButton.innerText = "Finish Game";
+            }
         }
         gameWindow.style.display = "none";
-        scoreWindow.style.display = "block";
+        scoreWindow.style.display = "flex";
         finishWindow.style.display = "none";
         guessInputBook.value = "";
         guessInputChapter.value = "";
@@ -207,7 +220,7 @@ function processGuess() {
 
 // Copy a message to the clipboard
 async function copyContent() {
-    let textToCopy = `🎉 I just played a game of TheoGuessr and got ${finalScore.innerText} points! 🚀\nHow well can you do? 😎\nhttp://theoguessr.com/`;
+    let textToCopy = `🎉 I just played a game of TheoGuessr and got ${finalScoreText.innerText} points! 🚀\nHow well can you do? 😎\nhttp://theoguessr.com/`;
 
     try {
         await navigator.clipboard.writeText(textToCopy);
@@ -220,15 +233,16 @@ async function copyContent() {
 
 // Show the modal saying that the message was copied to clipboard
 function showModal() {
-    const modal = document.getElementById('modal');
-    modal.showModal();
-    document.getElementById('closeBtn').addEventListener('click', closeModal);
+    let modal = document.getElementById('copy-modal');
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
 };
 
 // Hide the modal saying that the message was copied to clipboard
 function closeModal() {
-    const modal = document.getElementById('modal');
-    modal.close();
+    let modal = document.getElementById('copy-modal');
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
 };
 
 
@@ -253,7 +267,7 @@ function chapterAutoComplete() {
     /*append the DIV element as a child of the autocomplete container:*/
     this.parentNode.appendChild(a);
     /*create a DIV element for each matching element:*/
-    b = document.createElement("DIV");
+    b = document.createElement("div");
     /*make the matching letters bold:*/
     b.innerHTML = "1-" + numChapters;
     /*insert a input field that will hold the current array item's value:*/
@@ -278,14 +292,14 @@ function verseAutoComplete() {
     let numVerses = book.chapters[guessChapter - 1];
     let a, b;
     /*create a DIV element that will contain the items (values):*/
-    a = document.createElement("DIV");
+    a = document.createElement("div");
     a.setAttribute("id", "verse-autocomplete-list");
     a.setAttribute("class", "autocomplete-numbers");
     // a.setAttribute("class", "autocomplete-items");
     /*append the DIV element as a child of the autocomplete container:*/
     this.parentNode.appendChild(a);
     /*create a DIV element for each matching element:*/
-    b = document.createElement("DIV");
+    b = document.createElement("div");
     /*make the matching letters bold:*/
     b.innerHTML = "1-" + numVerses;
     /*insert a input field that will hold the current array item's value:*/
@@ -305,8 +319,8 @@ function autocomplete(inp, arr) {
         if (!val) { return false; }
         currentFocus = -1;
         /*create a DIV element that will contain the items (values):*/
-        a = document.createElement("DIV");
-        a.setAttribute("id", this.id + "autocomplete-list");
+        a = document.createElement("div");
+        a.setAttribute("id", "book-autocomplete-list");
         a.setAttribute("class", "autocomplete-items");
         /*append the DIV element as a child of the autocomplete container:*/
         this.parentNode.appendChild(a);
@@ -315,7 +329,7 @@ function autocomplete(inp, arr) {
             /*check if the item starts with the same letters as the text field value:*/
             if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                 /*create a DIV element for each matching element:*/
-                b = document.createElement("DIV");
+                b = document.createElement("div");
                 /*make the matching letters bold:*/
                 b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
                 b.innerHTML += arr[i].substr(val.length);
@@ -332,6 +346,7 @@ function autocomplete(inp, arr) {
                 a.appendChild(b);
             }
         }
+        
     });
     /*execute a function presses a key on the keyboard:*/
     inp.addEventListener("keydown", function(e) {
@@ -388,6 +403,7 @@ function autocomplete(inp, arr) {
     document.addEventListener("click", function(e) {
         closeAllLists(e.target);
     });
+
 }
 
 
@@ -397,25 +413,27 @@ function main() {
     totalScore = 0;
 
 
-    gameWindow.style.display = "block";
+    gameWindow.style.display = "flex";
     scoreWindow.style.display = "none";
     finishWindow.style.display = "none";
 
     populateVerse();
-    document.getElementById('shareBtn').onclick = copyContent;
+    document.getElementById('share-btn').onclick = copyContent;
 
     // guessInputBook.addEventListener("input", bookAutoComplete);
     guessInputChapter.addEventListener("focus", chapterAutoComplete);
     guessInputVerse.addEventListener("focus", verseAutoComplete);
     guessButton.addEventListener("click", processGuess);
-    newGameButton.addEventListener("click", newGame);
-    resetButton.addEventListener("click", () => {
-        if (round == 5) {
-            finishGame()
-        } else {
-            resetGame()
-        }
-    });
+    // newGameButton.addEventListener("click", newGame);
+    for (let nextRoundButton of nextRoundButtons) {
+        nextRoundButton.addEventListener("click", () => {
+            if (round == 5) {
+                finishGame()
+            } else {
+                resetGame()
+            }
+        });
+    }
     let bookList = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi", "Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"];
 
     autocomplete(guessInputBook, bookList);
