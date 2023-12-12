@@ -444,6 +444,10 @@ html {
   font-family: 'Jost', sans-serif;
 }
 
+body {
+  inset: 0px;
+}
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;

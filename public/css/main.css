@@ -6,6 +6,9 @@
     html {
         font-family: 'Jost', sans-serif;       
     }
+    body {
+        @apply inset-0;
+    }
 }
 
 .autocomplete-numbers,
