@@ -20,3 +20,11 @@ function openHs() {
     hsScreen.classList.add("flex");
     hsMenu.classList.add("flex");
 }
+
+function populateHighscores() {
+    let highscores = JSON.parse(localStorage.getItem("highscores")) || []
+    return highscores.map(score => {
+        return `<li class="text-base">${score.score} on ${score.date} on Difficulty ${score.difficulty}</li>`
+    }).join("");
+}
+document.getElementById("highscores").innerHTML = populateHighscores();

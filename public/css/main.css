@@ -10,30 +10,20 @@
 
 .autocomplete-numbers,
 .autocomplete-items {
-    position: absolute;
-    border: 1px solid #d4d4d4;
-    border-bottom: none;
-    border-top: none;
-    z-index: 99;
+    @apply absolute border-x border-Overlay2 z-50 normal-case;
     /*position the autocomplete items to be the same width as the container:*/
-    top: 100%;
-    left: 0;
-    right: 0;
+    @apply top-full left-0 right-0;
 }
 .autocomplete-numbers div,
 .autocomplete-items div {
-    padding: 10px;
-    cursor: pointer;
-    background-color: #44507F;
-    border-bottom: 1px solid #d4d4d4;
+    @apply p-2.5 cursor-pointer bg-Overlay0 border-b-1 border-Overlay2;
 }
-.autocomplete-numbers div:hover,
+
 .autocomplete-items div:hover {
     /*when hovering an item:*/
-    background-color: #1c37a5;
+    @apply bg-Blue;
 }
 .autocomplete-active {
     /*when navigating through the items using the arrow keys:*/
-    background-color: #1c37a5 !important;
-    color: #ffffff;
+    @apply bg-Blue text-Text;
 }

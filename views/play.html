@@ -52,7 +52,7 @@
             <div class="flex flex-col gap-8">
                 
                 <div class="flex flex-col justify-center items-center font-bold uppercase gap-8 text-Text rounded-md bg-Base p-4 w-80">
-                    <h3 class="text-Yellow text-3xl" id="message">Good Job!</h3>
+                    <h3 class="text-Yellow text-3xl" id="round-message">Good Job!</h3>
                     <p class="text-xl font-bold"><span class="text-Teal" id="round-score">2,400</span> of 5,000 points</p>
                     <p class="text-xl font-bold"><span class="text-Mauve" id="distance">30,000</span> Verses Away</p>
                     
@@ -63,15 +63,15 @@
             </div>
             <div class="flex flex-col justify-center items-center text-sm md:text-base lg:text-xl xl:text-2xl font-normal uppercase gap-8 text-Text rounded-md bg-Base p-4">
                 <div class="flex flex-row items-center justify-between">
-                    <h3 class="" id="message">Correct Verse: <span>1 Corinthians 12:34</span></h3>
+                    <h3 class="">Correct Verse: <span id="correct-reference">1 Corinthians 12:34</span></h3>
                     <!-- <i class="fa-solid fa-arrow-down"></i> -->
                 </div>
-                <p class="" id="correct-verse">And she sent and called Barak the son of Abinoam out of Kedeshnaphtali, and said unto him, Hath not the LORD God of Israel commanded, saying, Go and draw toward mount Tabor, and take with thee ten thousand men of the children of Naphtali and of the children of Zebulun?</p>
+                <p class="normal-case" id="correct-verse">And she sent and called Barak the son of Abinoam out of Kedeshnaphtali, and said unto him, Hath not the LORD God of Israel commanded, saying, Go and draw toward mount Tabor, and take with thee ten thousand men of the children of Naphtali and of the children of Zebulun?</p>
                 <div class="flex flex-row items-center justify-between">
-                    <h3 class="" id="message">Correct Verse: <span>1 Corinthians 12:34</span></h3>
+                    <h3 class="">Guessed Verse: <span id="guessed-reference">1 Corinthians 12:34</span></h3>
                     <!-- <i class="fa-solid fa-arrow-down"></i> -->
                 </div>
-                <p class="" id="guessed-verse">And she sent and called Barak the son of Abinoam out of Kedeshnaphtali, and said unto him, Hath not the LORD God of Israel commanded, saying, Go and draw toward mount Tabor, and take with thee ten thousand men of the children of Naphtali and of the children of Zebulun?</p>
+                <p class="normal-case" id="guessed-verse">And she sent and called Barak the son of Abinoam out of Kedeshnaphtali, and said unto him, Hath not the LORD God of Israel commanded, saying, Go and draw toward mount Tabor, and take with thee ten thousand men of the children of Naphtali and of the children of Zebulun?</p>
                 
                 
             </div>
@@ -82,7 +82,7 @@
             
         </main>
         <main class="p-9 gap-2 overflow-y-auto h-full flex-col md:flex-row-reverse justify-around items-center hidden" id="finish-window">
-            <div class="flex flex-col gap-8">
+            <div class="flex flex-col gap-6">
                 
                 <div class="flex flex-col justify-center items-center font-bold uppercase gap-8 text-Text rounded-md bg-Base p-4 w-80 md:w-96">
                     <h3 class="text-Yellow text-3xl" id="message">Good Job!</h3>
@@ -93,14 +93,19 @@
                 </div>
                 <div class="flex flex-col justify-center items-center text-2xl font-bold uppercase gap-6 text-Mantle">
                     <a href="/newgame"><h3 class="bg-Green px-2 py-0.5 lg:px-4 lg:py-1 rounded-md">Play Again</h3></a>
-                    <a href="#"><h3 class="bg-Sky px-2 py-0.5 rounded-md" id="share-btn">Share</h3></a>
+                    <h3 class="bg-Sky px-2 py-0.5 rounded-md cursor-pointer" id="share-btn">Share</h3>
                     <a href="/"><h3 class="bg-Red px-2 py-0.5 rounded-md">Main Menu</h3></a>
                 </div>
-            </div>   
+            </div>
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 flex-col items-center justify-center max-w-md gap-3 text-Text bg-Overlay0 p-4 rounded-md hidden" id="copy-modal">
+                <h2 class="text-2xl font-bold">Score Copied to Clipboard!</h2>
+            </div>
         </main>
+
+
         <!-- <main class="hidden" id="scoring-window"></main> -->
         <!-- <main class="hidden" id="finish-window"></main> -->
-        <footer class="bg-Mantle">
+        <footer class="bg-Mantle" id="footer">
             <div class="flex flex-col w-full items-center justify-between py-3 px-9 mx-auto relative container bottom-0">
                 <p class="text-2xl font-bold">Score: <span id="total-score">0</span></p>
                 <p class="text-2xl font-bold">Round: <span id="round">1</span>/5</p>
