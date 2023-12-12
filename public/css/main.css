@@ -16,7 +16,7 @@
 }
 .autocomplete-numbers div,
 .autocomplete-items div {
-    @apply p-2.5 cursor-pointer bg-Overlay0 border-b-1 border-Overlay2;
+    @apply p-2.5 cursor-pointer bg-Overlay0 border-b border-Overlay2;
 }
 
 .autocomplete-items div:hover {
