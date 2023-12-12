@@ -1,4 +1,4 @@
-# Bible Detective
+# Bible Detective v1.0.0
 
 The repo for the Bible Detective website project!
 
