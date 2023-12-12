@@ -28,6 +28,11 @@ func Play(c echo.Context) error {
 	return c.Render(http.StatusOK, "play.html", nil)
 }
 
+// The function corresponding with the "/newgame" route
+func NewGame(c echo.Context) error {
+	return c.Render(http.StatusOK, "newgame.html", nil)
+}
+
 // The function corresponding with the "/play" route
 func Daily(c echo.Context) error {
 	return c.Render(http.StatusOK, "daily.html", nil)

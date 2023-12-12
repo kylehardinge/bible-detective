@@ -1,14 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="/css/styles.css" rel="stylesheet">
-        <script src="/js/play.js" type="module" defer></script>
-        <script src="https://unpkg.com/htmx.org@1.9.9"></script>
-        <title>play</title>
+        <title>TheoGuessr</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://kit.fontawesome.com/c569bdf365.js" crossorigin="anonymous"></script>
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="js/play.js" defer></script>
     </head>
-    <body class="font-sans">
-        {{ template "_game.html" . }}
+
+    <body class="bg-Crust text-Text font-normal h-screen min-h-screen overflow-hidden flex flex-col">
+        <main class="p-9 gap-8 overflow-y-auto h-full flex flex-col md:flex-row justify-around items-center" id="game-window">
+            <div class="flex flex-col justify-start items-start h-auto text-sm md:text-base lg:text-xl xl:text-2xl font-normal gap-2 text-Text rounded-md bg-Base p-4 overflow-y-auto" id="verse-box">
+            </div>
+            <div class="flex flex-col gap-8">
+                <div class="flex flex-col justify-center items-center text-2xl font-bold uppercase gap-6 text-Text">
+                    <div class="relative inline-block">
+                        <input type="text"
+                            class="bg-Base text-white text-center mt-1 p-2.5 w-80 rounded-md shadow-md gap-1 text-2xl placeholder:text-Overlay1 placeholder:italic"
+                            id="guess-input-book" maxlength="16" placeholder="Book">
+                    </div>
+                    <div class="flex flex-row gap-2">
+                        <div class="relative inline-block">
+                            <input type="text"
+                                class="bg-Base text-white text-center mt-1 p-2.5 w-32 rounded-md shadow-md text-2xl placeholder:text-Overlay1 placeholder:italic"
+                                id="guess-input-chapter" maxlength="3" placeholder="Chapter">
+                        </div>
+                        <div class="flex justify-center items-center">
+                            <p class="text-white text-6xl">:</p>
+                        </div>
+                        <div class="relative inline-block">
+                            <input type="text"
+                                class="bg-Base text-white text-center mt-1 p-2.5 w-32 rounded-md shadow-md text-2xl placeholder:text-Overlay1 placeholder:italic"
+                                id="guess-input-verse" maxlength="3" placeholder="Verse">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center items-center text-2xl font-bold uppercase gap-6 text-Mantle">
+                    <h3 class="bg-Green px-2 py-0.5 rounded-md capitalize cursor-pointer" id="guess-btn">Enter Guess</h3>
+                </div>
+            </div>
+            
+        </main>
+        <main class="p-9 gap-2 overflow-y-auto h-full flex-col md:flex-row-reverse justify-around items-center hidden" id="scoring-window">
+            <div class="flex flex-col gap-8">
+                
+                <div class="flex flex-col justify-center items-center font-bold uppercase gap-8 text-Text rounded-md bg-Base p-4 w-80">
+                    <h3 class="text-Yellow text-3xl" id="message">Good Job!</h3>
+                    <p class="text-xl font-bold"><span class="text-Teal" id="round-score">2,400</span> of 5,000 points</p>
+                    <p class="text-xl font-bold"><span class="text-Mauve" id="distance">30,000</span> Verses Away</p>
+                    
+                </div>
+                <div class="md:flex flex-col justify-center items-center text-2xl font-bold uppercase gap-6 text-Mantle hidden">
+                    <h3 class="bg-Green px-2 py-0.5 rounded-md capitalize cursor-pointer next-round-btn">Next Round</h3>
+                </div>
+            </div>
+            <div class="flex flex-col justify-center items-center text-sm md:text-base lg:text-xl xl:text-2xl font-normal uppercase gap-8 text-Text rounded-md bg-Base p-4">
+                <div class="flex flex-row items-center justify-between">
+                    <h3 class="" id="message">Correct Verse: <span>1 Corinthians 12:34</span></h3>
+                    <!-- <i class="fa-solid fa-arrow-down"></i> -->
+                </div>
+                <p class="" id="correct-verse">And she sent and called Barak the son of Abinoam out of Kedeshnaphtali, and said unto him, Hath not the LORD God of Israel commanded, saying, Go and draw toward mount Tabor, and take with thee ten thousand men of the children of Naphtali and of the children of Zebulun?</p>
+                <div class="flex flex-row items-center justify-between">
+                    <h3 class="" id="message">Correct Verse: <span>1 Corinthians 12:34</span></h3>
+                    <!-- <i class="fa-solid fa-arrow-down"></i> -->
+                </div>
+                <p class="" id="guessed-verse">And she sent and called Barak the son of Abinoam out of Kedeshnaphtali, and said unto him, Hath not the LORD God of Israel commanded, saying, Go and draw toward mount Tabor, and take with thee ten thousand men of the children of Naphtali and of the children of Zebulun?</p>
+                
+                
+            </div>
+            <div class="flex flex-col justify-center items-center text-2xl font-bold uppercase gap-6 text-Mantle md:hidden">
+                <h3 class="bg-Green px-2 py-0.5 rounded-md capitalize cursor-pointer next-round-btn">Next Round</h3>
+            </div>
+
+            
+        </main>
+        <main class="p-9 gap-2 overflow-y-auto h-full flex-col md:flex-row-reverse justify-around items-center hidden" id="finish-window">
+            <div class="flex flex-col gap-8">
+                
+                <div class="flex flex-col justify-center items-center font-bold uppercase gap-8 text-Text rounded-md bg-Base p-4 w-80 md:w-96">
+                    <h3 class="text-Yellow text-3xl" id="message">Good Job!</h3>
+                    <p class="text-xl font-bold"><span class="text-Teal" id="final-score">23,400</span> of 25,000 points</p>
+                    <p class="text-xl font-bold"><span class="text-Mauve" id="tot-distance">150,000</span> Total Verses Away</p>
+                    <p class="text-xl font-bold"><span class="text-Pink" id="avg-distance">20,000</span> Avg. Verses Away</p>
+                    
+                </div>
+                <div class="flex flex-col justify-center items-center text-2xl font-bold uppercase gap-6 text-Mantle">
+                    <a href="/newgame"><h3 class="bg-Green px-2 py-0.5 lg:px-4 lg:py-1 rounded-md">Play Again</h3></a>
+                    <a href="#"><h3 class="bg-Sky px-2 py-0.5 rounded-md" id="share-btn">Share</h3></a>
+                    <a href="/"><h3 class="bg-Red px-2 py-0.5 rounded-md">Main Menu</h3></a>
+                </div>
+            </div>   
+        </main>
+        <!-- <main class="hidden" id="scoring-window"></main> -->
+        <!-- <main class="hidden" id="finish-window"></main> -->
+        <footer class="bg-Mantle">
+            <div class="flex flex-col w-full items-center justify-between py-3 px-9 mx-auto relative container bottom-0">
+                <p class="text-2xl font-bold">Score: <span id="total-score">0</span></p>
+                <p class="text-2xl font-bold">Round: <span id="round">1</span>/5</p>
+            </div>
+        </footer>
     </body>
 </html>
+

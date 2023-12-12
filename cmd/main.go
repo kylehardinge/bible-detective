@@ -13,7 +13,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-    "golang.org/x/crypto/acme/autocert"
+    // "golang.org/x/crypto/acme/autocert"
 )
 
 // Template completion
@@ -41,10 +41,10 @@ func main() {
 	// Initalize a new echo server
 	e := echo.New()
     
-    e.AutoTLSManager.Cache = autocert.DirCache("var/www/.cache")
+    // e.AutoTLSManager.Cache = autocert.DirCache("var/www/.cache")
 	// Put sitewide middleware here
     // Redirect to https
-    e.Pre(middleware.HTTPSRedirect())
+    // e.Pre(middleware.HTTPSRedirect())
 	// Recover the runtime in cases of panics
 	e.Use(middleware.Recover())
 	// Log requests to the console
@@ -69,6 +69,7 @@ func main() {
 	// General routes
 	e.GET("/", router.Index)
 	e.GET("/play", router.Play)
+	e.GET("/newgame", router.NewGame)
 	e.GET("/daily", router.Daily)
 	e.GET("/test", router.Test)
 

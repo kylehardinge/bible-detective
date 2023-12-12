@@ -1,51 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <title>TheoGuessr</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://kit.fontawesome.com/c569bdf365.js" crossorigin="anonymous"></script>
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
 
-<head>
-    <title>Test</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/tailwind.css" rel="stylesheet">
-</head>
-
-<body>
-
-    <div class="w-96 h-96 relative bg-neutral-900">
-        <div class="w-80 h-60 left-[37px] top-[422px] absolute">
-            <div class="w-80 h-60 left-0 top-0 absolute flex-col justify-center items-center gap-7 inline-flex">
-                <div class="w-48 h-12 relative">
-                    <div class="w-48 h-12 left-0 top-[1px] absolute bg-green-300 rounded-xl"></div>
-                    <div
-                        class="w-44 h-12 left-[3px] top-0 absolute text-center text-zinc-800 text-3xl font-bold font-['Jost'] tracking-widest">
-                        Free Play</div>
+    <body class="bg-Crust text-Text font-normal h-screen min-h-screen overflow-hidden flex flex-col">
+        <main class="p-9 gap-2 overflow-y-auto h-full flex flex-col md:flex-row-reverse justify-around items-center">
+            <div class="flex flex-col gap-8">
+                
+                <div class="flex flex-col justify-center items-center font-bold uppercase gap-8 text-Text rounded-md bg-Base p-4 w-80 md:w-96">
+                    <h3 class="text-Yellow text-3xl" id="message">Good Job!</h3>
+                    <p class="text-xl font-bold"><span class="text-Teal" id="final-score"></span> of 25,000 points</p>
+                    <p class="text-xl font-bold"><span class="text-Mauve" id="tot-distance">150,000</span> Total Verses Away</p>
+                    <p class="text-xl font-bold"><span class="text-Pink" id="avt-distance">20,000</span> Avg. Verses Away</p>
+                    
                 </div>
-                <div class="w-72 h-12 relative">
-                    <div class="w-72 h-12 left-0 top-0 absolute bg-sky-300 rounded-xl"></div>
-                    <div
-                        class="left-[14.25px] top-0 absolute text-zinc-800 text-3xl font-bold font-['Jost'] tracking-widest">
-                        Daily Challenge</div>
+                <div class="flex flex-col justify-center items-center text-2xl font-bold uppercase gap-6 text-Mantle">
+                    <a href="/newgame"><h3 class="bg-Green px-2 py-0.5 lg:px-4 lg:py-1 rounded-md">Play Again</h3></a>
+                    <a href="#"><h3 class="bg-Sky px-2 py-0.5 rounded-md">Share</h3></a>
+                    <a href="/"><h3 class="bg-Red px-2 py-0.5 rounded-md">Main Menu</h3></a>
                 </div>
-                <div class="w-56 h-12 relative">
-                    <div class="w-56 h-12 left-0 top-0 absolute bg-green-300 rounded-xl"></div>
-                    <div
-                        class="left-[11.25px] top-0 absolute text-zinc-800 text-3xl font-bold font-['Jost'] tracking-widest">
-                        High Scores</div>
-                </div>
-            </div>
-        </div>
-        <div class="w-96 h-16 left-0 top-0 absolute bg-gray-900"></div>
-        <div class="w-96 h-16 left-0 top-[776px] absolute bg-gray-900"></div>
-        <div class="w-80 h-11 left-[37px] top-[13px] absolute justify-start items-center gap-9 inline-flex">
-            <div class="w-52 h-10 text-center text-indigo-200 text-3xl font-bold font-['Jost'] tracking-widest">
-                TheoGuessr</div>
-        </div>
-        <div class="w-80 h-60 left-[44px] top-[122px] absolute"><span
-                style="text-indigo-200 text-5xl font-bold font-['Jost'] tracking-widest">Discover the  </span><span
-                style="text-orange-200 text-5xl font-bold font-['Jost'] tracking-widest">Bible</span></div>
-        <div class="w-80 left-[37px] top-[795px] absolute justify-between items-center inline-flex">
-            <div class="text-center text-indigo-200 text-xl font-bold font-['Jost']">Made by: Kyle and Ethan</div>
-        </div>
-    </div>
-</body>
-
+            </div>   
+        </main>
+    </body>
 </html>

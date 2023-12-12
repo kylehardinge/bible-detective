@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: ["./views/**/*.html"],
+    content: ["./views/**/*.html", "./public/js/*.js"],
     theme: {
         screens: {
             sm: '480px',
@@ -36,6 +36,35 @@ module.exports = {
             'Mantle': '#181825',
             'Crust': '#11111b',
         },
+        // Light mode
+        /* colors: {
+            'Rosewater': '#dc8a78',
+            'Flamingo': '#dd7878',
+            'Pink': '#ea76cb',
+            'Mauve': '#8839ef',
+            'Red': '#d20f39',
+            'Maroon': '#e64553',
+            'Peach': '#fe640b',
+            'Yellow': '#df8e1d',
+            'Green': '#40a02b',
+            'Teal': '#179299',
+            'Sky': '#04a5e5',
+            'Sapphire': '#209fb5',
+            'Blue': '#1e66f5',
+            'Lavender': '#7287fd',
+            'Text': '#4c4f69',
+            'Subtext1': '#5c5f77',
+            'Subtext0': '#6c6f85',
+            'Overlay2': '#7c7f93',
+            'Overlay1': '#8c8fa1',
+            'Overlay0': '#9ca0b0',
+            'Surface2': '#acb0be',
+            'Surface1': '#bcc0cc',
+            'Surface0': '#ccd0da',
+            'Base': '#eff1f5',
+            'Mantle': '#e6e9ef',
+            'Crust': '#dce0e8',
+        }, */
         extend: {},
     },
     plugins: [],

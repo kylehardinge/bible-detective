@@ -1,61 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>TheoGuessr</title>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link href="/css/styles.css" rel="stylesheet" />
-		<script src="/js/index.js" defer></script>
-	</head>
-	<body>
-		<main class=" p-6 font-sans h-screen bg-[#1A213B] text-white">
-		<div class="flex flex-col justify-evenly items-center text-white gap-5 w-full">
-			<h1 class="text-4xl font-bold mb-4">Welcome to TheoGuessr!</h1>
-			<!--<div class="flex flex-row justify-evenly items-center text-white gap-3 w-full mt-3">
-				<a href="/daily" class="bg-[#48537B] hover:bg-[#5C5E7B] text-white px-6 py-3 rounded-md shadow-md">Play the daily Bible verse</a>
-			</div> -->
-			<div class="flex flex-col justify-evenly items-center text-white gap-5 bg bg-[#5c5f77] px-6 py-3 rounded-md shadow-md">
-				<div class="flex flex-row justify-center gap-2 items-center text-white w-full">
-				<a href="/play" class="bg-[#48537B] hover:bg-[#5C5E7B] text-white px-6 py-3 rounded-md shadow-md">Test Your Knowledge of the Bible</a>
-				</div>
-				<div>
-					<div class="mt-3 flex flex-row items-center justify-evenly gap-3">
-						<label for="easy">
-							<div class="option easy rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
-							<input type="radio" id="easy" name="difficulty" value="easy" class="hidden" onchange="changeColor(this)">
-							<p>Easy</p>
-							</div>
-						</label>
-						<label for="medium">
-							<div class="option hard rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
-							<input type="radio" id="medium" name="difficulty" value="medium" class="hidden" onchange="changeColor(this)">
-							<p>Medium</p>
-							</div>
-						</label>
-						<label for="hard">
-							<div class="option hard rounded-md bg-[#48537B] px-6 py-3 text-white shadow-md hover:bg-[#5C5E7B]">
-							<input type="radio" id="hard" name="difficulty" value="hard" class="hidden" onchange="changeColor(this)">
-							<p>Hard</p>
-							</div>
-						</label>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div>
-			<div class="flex flex-row justify-center items-center text-white gap-5 w-full mt-8">
-				<div class="flex flex-col justify-evenly items-center text-white gap-5 bg bg-[#5c5f77] px-6 py-3 rounded-md shadow-md">
-					<h2 class="text-2xl">Highscores</h2>
-                    <ul id="highscores">
-                        
-                    </ul>
-				</div>
-				<div class=" w-1/3 flex flex-col justify-evenly items-center text-white gap-5 bg bg-[#5c5f77] px-6 py-3 rounded-md shadow-md h-auto">
-					<p class="text-xl"> Rules and how to play </p>
-					<p class="break-normal">Welcome to TheoGuessr, the game where you are given a Bible verse and you are tasked to figure out where it is. The rules are straightforward: the closer you are to the Bible verse, the more points you earn. you can earn up to 5000 each round, and your top scores will be displayed in the highscores section. Choose a difficulty level, test your knowledge, or play the daily verse and share your score with friends. The difficulty slider adjusts the number of context verses: easy includes 6 context verses, medium has 2, and hard provides no context verses. Enjoy your the journey through the verses!</p>
-				</div>
-			</div>
-		</div>
-		</main>
-	</body>
+    <head>
+        <title>TheoGuessr</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://kit.fontawesome.com/c569bdf365.js" crossorigin="anonymous"></script>
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="js/help.js" defer></script>
+        <script src="js/highscores.js" defer></script>
+    </head>
+
+    <body>
+        <div class="bg-Crust text-Text font-normal h-screen min-h-screen overflow-hidden flex flex-col">
+            <header class="bg-Mantle">
+                <div class="flex w-full items-center justify-between py-3 px-9 relative container mx-auto">
+                    <div class="w-10">
+                        <i class="text-3xl fa-solid fa-bars"></i>
+                    </div>
+                    <div>
+                        <a href="#"><h1 class="text-3xl font-bold tracking-[2.88px] tracking">TheoGuessr</h1></a>
+                    </div>
+                    <div class="w-10 cursor-pointer" id="help-open">
+                        <i class="text-3xl fa-solid fa-question"></i>
+                    </div>
+                </div>
+            </header>
+            <main class="p-9 gap-2 overflow-y-auto h-full flex flex-col lg:flex-row justify-around items-center">
+                <div><h2 class="text-6xl xl:text-8xl font-bold">Discover the <span class="text-Yellow">Bible</span></h2></div>
+                <div class="flex flex-col justify-center items-center text-2xl xl:text-4xl font-bold uppercase gap-8 text-Mantle">
+                    <a href="/newgame"><h3 class="bg-Green px-2 py-0.5 lg:px-4 lg:py-1 rounded-md">Free Play</h3></a>
+                    <a href="/daily"><h3 class="bg-Sky px-2 py-0.5 rounded-md">Daily Challenge</h3></a>
+                    <h3 class="bg-Red px-2 py-0.5 rounded-md cursor-pointer" id="open-high-scores">High Scores</h3>
+                </div>
+            </main>
+            <footer class="bg-Mantle">
+                <div class="flex w-full items-center justify-between py-3 px-9 mx-auto relative container bottom-0">
+                    <p class="text-xl">Made by: Kyle and Ethan</p>
+                    <a class="text-xl" href="https://github.com/kylehardinge/theoguessr"><i class="fa-brands fa-github"></i></a>
+                </div>
+            </footer>
+        </div>
+        <div class="absolute top-0 w-full h-full backdrop-blur-sm hidden" id="help-screen">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center max-w-md gap-3 text-Text bg-Overlay0 p-4 rounded-md hidden" id="help-menu">
+                <div class="flex flex-row items-center justify-between w-full">
+                    <p class="w-[38px]"></p>
+                    <h2 class="text-2xl font-bold">How to Play</h2>
+                    <i class="p-1 text-Red text-3xl fa-solid fa-rectangle-xmark cursor-pointer" id="help-close"></i>
+                </div>
+                <p class="break-normal text-center">Welcome to TheoGuessr, the game where you are given a Bible verse and you are tasked to figure out where it is. The rules are straightforward: the closer you are to the Bible verse, the more points you earn. you can earn up to 5000 each round, and your top scores will be displayed in the highscores section. Choose a difficulty level, test your knowledge, or play the daily verse and share your score with friends. The difficulty slider adjusts the number of context verses: easy includes 6 context verses, medium has 2, and hard provides no context verses. Enjoy your the journey through the verses!</p>
+            </div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center max-w-md gap-3 text-Text bg-Overlay0 p-4 rounded-md hidden" id="high-scores">
+                <div class="flex flex-row items-center justify-between w-full">
+                    <p class="w-[38px]"></p>
+                    <h2 class="text-2xl font-bold">High Scores</h2>
+                    <i class="p-1 text-Red text-3xl fa-solid fa-rectangle-xmark cursor-pointer" id="help-close"></i>
+                </div>
+                <p class="break-normal text-center"></p>
+            </div>
+				
+        </div>
+    </body>
 </html>
