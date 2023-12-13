@@ -18,13 +18,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// Allows for passing a scanner in the return statment
-// Not Implemented
-// type FileScanner struct {
-// 	io.Closer
-// 	*bufio.Scanner
-// }
-
 // Allows for the representation of a bible verse
 // Used for importing the kjv Bible from json
 type ImportVerse struct {
@@ -66,7 +59,7 @@ type ImportChapter struct {
 	Verses []ImportVerse `json:"verses"`
 }
 
-// Used for the creation of a Bible manifest
+// Structs below are used for the creation of a Bible manifest
 type BibleManifest struct {
 	Version string         `json:"version"`
 	Books   []BookManifest `json:"books"`
@@ -95,10 +88,12 @@ type dbConfigInfo struct {
 	database string
 }
 
+// A pointer to the database so other files can access it
 var Db *sql.DB
 
 // Initalize database and seed data
 func InitDb() {
+    // Open the database
 	db, err := sql.Open("mysql", dbConfig())
 
 	if err != nil {
@@ -106,20 +101,21 @@ func InitDb() {
 		panic(err.Error())
 	}
 
-	// defer db.Close()
-
+    // Ping the database to verify a connection
 	err = db.Ping()
 	if err != nil {
 		fmt.Println("error verifying connection with db.Ping...")
 		panic(err.Error())
 	}
 
+    // Attempt to seed the database with data
 	err = seedData(db)
 	if err != nil {
 		fmt.Println("error seeding the data in the db")
 		panic(err.Error())
 	}
 
+    // If everything is successful the database is useful
 	fmt.Println("Connection successful to test database")
 	Db = db
 }
@@ -142,6 +138,7 @@ func seedData(db *sql.DB) error {
 
 // Setups the KJV bible by adding the data to the database and generating the manifest
 func setupKjv(db *sql.DB) error {
+    // Create the table with specified rows
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS kjv (
 	id INTEGER PRIMARY KEY AUTO_INCREMENT,
 	book_id TEXT NOT NULL,
@@ -155,6 +152,7 @@ func setupKjv(db *sql.DB) error {
 		panic(err.Error())
 	}
 
+    // Read the directory containing all the books of the KJV Bible
 	bookDirectory := "assets/kjv/bible-json"
 	books, err := os.ReadDir(bookDirectory)
 	if err != nil {
@@ -166,77 +164,104 @@ func setupKjv(db *sql.DB) error {
 		bookList = append(bookList, book.Name())
 	}
 
+    // Correct the book order so the books are correctly added to the database
 	correctBookOrder, correctBookSort, err := getBookOrder("assets/kjv/bookOrder.csv")
 	if err != nil {
 		panic(err.Error())
 	}
-	// fmt.Println(correctBookOrder)
+
+    // Remove red letters of Jesus, paragraph markers, and emphasized text tags so the game is harder/more consistent
 	removeHints, err := regexp.Compile(`¶|<span style="color:red;">|<\/span>|<em>|<\/em>`)
 	if err != nil {
 		panic(err.Error())
 	}
 
+    // Verify the books are in the correct order
 	for i, book := range bookList {
 		if book != correctBookSort[i] {
 			fmt.Println(fmt.Sprintf("AHHH this book does not match %s <- err book | correct book -> %s", book, correctBookSort[i]))
 			return errors.New("Error in naming of books")
 		}
 	}
+    
+    // This is for generating the manifest of the KJV
 	kjvManifest := BibleManifest{}
-	kjvManifest.Version = "KJV"
+	kjvManifest.Version = "kjv"
+    
+    // Id number of the Bible verses
 	idNumber := 0
+    // A progress bar because who doesn't need a progress bar
 	bar := progressbar.Default(int64(len(correctBookOrder)), "Adding the KJV Bible to the database")
 	for i, book := range correctBookOrder {
-		// fmt.Println(makeFilePath(bookDirectory, book.Name()))
-		// fmt.Println(i, book)
+        // Get a list of all the chapters
 		chapters, err := os.ReadDir(makeFilePath(bookDirectory, book))
 		if err != nil {
 			panic(err.Error())
 		}
+        
+        // This is to generate a manifest for the book to be added to the Bible manifest
 		bookManifest := BookManifest{}
 		bookManifest.Name = book
 		bookManifest.Index = i + 1
+
+        // Increment the progress bar each time a new book is getting added
 		bar.Add(1)
+
+        // Get the number of chapters based on the number of files read
+        // This is to allow the chapters to be read in order instead of 1, 10, 11,... 2, 20, 21, etc.
+        // That would get the ID numbers all messed up.
 		numChapters := len(chapters)
 		bookManifest.NumChapters = numChapters
 
+        // Loop through each chapter and read the contents to be inserted into the database
 		for chapter := 1; chapter <= numChapters; chapter++ {
-			// fmt.Printf("--%s\n", chapter.Name())
+            // Read the chapter and get the text contents
 			contents, err := os.ReadFile(makeFilePath(bookDirectory, book, fmt.Sprintf("%d.json", chapter)))
 			if err != nil {
 				panic(err.Error())
 			}
 
+            // Create an instance of a struct to make the json with
+            // Go requires this to parse json
+            // Its a minor pain but very easy to use once setup
 			chapterJSON := ImportChapter{}
 
+            // Unmarshall the data into the chapterJSON struct
 			json.Unmarshal(contents, &chapterJSON)
+            
+            // Get the number of verses and add it to the manifest
 			numVerses := chapterJSON.Verses[len(chapterJSON.Verses)-1].Verse
 			bookManifest.Chapters = append(bookManifest.Chapters, numVerses)
+
+            // This was the easisest way to set the book_id of the book
 			if chapter == 1 {
 				bookManifest.Id = chapterJSON.Verses[0].Book_id
 			}
+
+            // Loop through the verses and add them to the database
+            // Later this could be converted into a single query with a transaction
 			for _, verse := range chapterJSON.Verses {
+                // Remove all of the possible hints mentioned above
 				noHintText := removeHints.ReplaceAll([]byte(verse.Text), []byte(""))
+                // Insert the data into the database
 				_, err = db.Exec(`INSERT INTO kjv (book_id, book_name, chapter, verse, text) VALUES (?,?,?,?,?);`, verse.Book_id, verse.Book_name, verse.Chapter, verse.Verse, string(noHintText[:]))
 				if err != nil {
 					panic(err.Error())
 				}
+                // Increase the id number
 				idNumber++
 			}
 		}
+        // Add the book just generated to the manifest
 		kjvManifest.Books = append(kjvManifest.Books, bookManifest)
 	}
-	// fmt.Println(kjvManifest)
+    // Save the manifest to a file
 	err = saveManifest(kjvManifest)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	// kjvManifestJSON, err := json.MarshalIndent(kjvManifest, "", "\t")
-	if err != nil {
-		panic(err.Error())
-	}
-	// fmt.Println(string(kjvManifestJSON))
+    // Let the administrator know the data has been entered
 	fmt.Println("Data has been entered")
 
 	return nil
@@ -262,7 +287,6 @@ func getBookOrder(filepath string) ([]string, []string, error) {
 	if err != nil {
 		panic(err.Error())
 	}
-	// orderedBooks := strings.Split(strings.Split(strings.Split(string(content), "\n")[0], "\r\n")[0], ",")
 	orderedBooks := strings.Split(strings.Split(string(content), "|")[0], ",")
 	books := make([]string, len(orderedBooks))
 	copy(books, orderedBooks)
@@ -290,7 +314,8 @@ func saveManifest(manifest BibleManifest) error {
 	return err
 }
 
-// Loads the server configuration info from db.config. This avoids having to store the password in this file.
+// Loads the server configuration info from db.config. This avoids having to store the database password in this file.
+// Returns the config in a formatted string that the go sql driver can understand
 func dbConfig() string {
 	file, err := os.Open("db.config")
 	if err != nil {

@@ -3,9 +3,6 @@ package main
 import (
 	"bible-detective/site/pkg/db"
 	"bible-detective/site/pkg/router"
-    // "crypto/tls"
-    // "golang.org/x/crypto/acme"
-    // "net/http"
 	"html/template"
 	"io"
 	"log"
@@ -13,10 +10,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+    // Uncomment when running the autocert
     // "golang.org/x/crypto/acme/autocert"
 )
 
 // Template completion
+// Makes html repeatable
 const template_files string = "views"
 
 type TemplateRenderer struct {
@@ -41,6 +40,8 @@ func main() {
 	// Initalize a new echo server
 	e := echo.New()
     
+    // TLS stuff so that the website doesnt say "not secure"
+    // When running on localhost the line below and the https redirect middleware is not needed. In testing it does not work
     // e.AutoTLSManager.Cache = autocert.DirCache("var/www/.cache")
 	// Put sitewide middleware here
     // Redirect to https
@@ -70,9 +71,8 @@ func main() {
 	e.GET("/", router.Index)
 	e.GET("/play", router.Play)
 	e.GET("/newgame", router.NewGame)
-	e.GET("/daily", router.Daily)
-	e.GET("/test", router.Test)
 
-	// Start the server on port 42069
+	// Start the server on port 8080 localhost
+    // On the server this is replaced to ":80" to start the server on port 80 of the machine
 	e.Logger.Fatal(e.Start("localhost:8080"))
 }

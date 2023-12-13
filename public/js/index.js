@@ -1,20 +1,17 @@
+// NOT USED
+//
+//
+//
+// Function to populate the high score window the the current highscores
 function populateHighscores() {
     let highscores = JSON.parse(localStorage.getItem("highscores")) || []
     return highscores.map(score => {
         return `<li class="text-sm">${score.score} on ${score.date} on Difficulty ${score.difficulty}</li>`
     }).join("");
 }
-document.addEventListener("DOMContentLoaded", function () {
-    let difficulty = localStorage.getItem("difficulty");
-    if (difficulty !== null) {
-        let radio = document.querySelector(
-            `.option input[value="${difficulty}"]`
-        );
-        radio.checked = true;
-        changeColor(radio);
-    }
-});
 
+
+// This function changes the color based on the radio button clicked
 function changeColor(radio) {
     let difficulty = radio.value;
     localStorage.setItem("difficulty", difficulty);
@@ -27,6 +24,7 @@ function changeColor(radio) {
     });
 }
 
+// These are the colors that should be used
 function getDifficultyColor(difficulty) {
     switch (difficulty) {
         case "easy":
@@ -40,5 +38,15 @@ function getDifficultyColor(difficulty) {
     }
 }
 
+// Populate the highscores in the high score menu
 document.getElementById("highscores").innerHTML = populateHighscores();
 
+// If the difficulty is not already set to medium, do it
+let difficulty = localStorage.getItem("difficulty");
+if (difficulty !== null) {
+    let radio = document.querySelector(
+        `.option input[value="${difficulty}"]`
+    );
+    radio.checked = true;
+    changeColor(radio);
+}

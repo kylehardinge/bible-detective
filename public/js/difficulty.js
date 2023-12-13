@@ -1,14 +1,15 @@
-document.addEventListener("DOMContentLoaded", function () {
-    let difficulty = localStorage.getItem("difficulty");
-    if (difficulty !== null) {
-        let radio = document.querySelector(
-            `.option input[value="${difficulty}"]`
-        );
-        radio.checked = true;
-        changeColor(radio);
-    }
-});
 
+// Set the difficulty if not already set
+let difficulty = localStorage.getItem("difficulty");
+if (difficulty !== null) {
+    let radio = document.querySelector(
+        `.option input[value="${difficulty}"]`
+    );
+    radio.checked = true;
+    changeColor(radio);
+}
+
+// Change the color based on the radio button selected
 function changeColor(radio) {
     let difficulty = radio.value;
     localStorage.setItem("difficulty", difficulty);
@@ -21,6 +22,7 @@ function changeColor(radio) {
     });
 }
 
+// Return the correct colors
 function getDifficultyColor(difficulty) {
     switch (difficulty) {
         case "easy":

@@ -1,24 +1,23 @@
 package parser
 
 import (
-	"fmt"
 	"strings"
 )
 
 
+// Split the inputted query into a book chapter and verse(s)
 func SplitQuery(query string) (string, string, []string) {
+    // Split out the book
+    // It must be a book code
 	firstSplit := strings.Split(query, " ")
-	fmt.Println(firstSplit)
 	book := firstSplit[0]
+    // Split out the chapter from the query
 	secondSplit := strings.Split(firstSplit[1], ":")
-	fmt.Println(secondSplit)
 	chapter := secondSplit[0]
+    // If there are verses, split those out, otherwise return an empty list
 	var verse []string
-	fmt.Println(len(secondSplit))
 	if len(secondSplit) > 1 {
 		verse = strings.Split(secondSplit[1], "-")
-	} else {
-		// verse = append(verse, "")
 	}
 	return book, chapter, verse
 }

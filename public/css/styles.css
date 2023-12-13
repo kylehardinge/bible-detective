@@ -613,10 +613,6 @@ body {
   margin-top: 0.25rem;
 }
 
-.box-border {
-  box-sizing: border-box;
-}
-
 .block {
   display: block;
 }
@@ -631,10 +627,6 @@ body {
 
 .hidden {
   display: none;
-}
-
-.h-96 {
-  height: 24rem;
 }
 
 .h-auto {
@@ -653,20 +645,8 @@ body {
   min-height: 100vh;
 }
 
-.w-1\/2 {
-  width: 50%;
-}
-
 .w-10 {
   width: 2.5rem;
-}
-
-.w-16 {
-  width: 4rem;
-}
-
-.w-3\/4 {
-  width: 75%;
 }
 
 .w-32 {
@@ -683,10 +663,6 @@ body {
 
 .w-full {
   width: 100%;
-}
-
-.w-screen {
-  width: 100vw;
 }
 
 .max-w-md {
@@ -739,10 +715,6 @@ body {
   justify-content: space-around;
 }
 
-.justify-evenly {
-  justify-content: space-evenly;
-}
-
 .gap-1 {
   gap: 0.25rem;
 }
@@ -755,20 +727,12 @@ body {
   gap: 0.75rem;
 }
 
-.gap-5 {
-  gap: 1.25rem;
-}
-
 .gap-6 {
   gap: 1.5rem;
 }
 
 .gap-8 {
   gap: 2rem;
-}
-
-.overflow-auto {
-  overflow: auto;
 }
 
 .overflow-hidden {
@@ -786,10 +750,6 @@ body {
 
 .rounded-md {
   border-radius: 0.375rem;
-}
-
-.border {
-  border-width: 1px;
 }
 
 .border-2 {
@@ -845,34 +805,6 @@ body {
   background-color: rgb(137 220 235 / var(--tw-bg-opacity));
 }
 
-.bg-\[\#1A213B\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(26 33 59 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#44507F\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(68 80 127 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#59a825\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(89 168 37 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#5c6688\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(92 102 136 / var(--tw-bg-opacity));
-}
-
-.p-0 {
-  padding: 0px;
-}
-
-.p-0\.5 {
-  padding: 0.125rem;
-}
-
 .p-1 {
   padding: 0.25rem;
 }
@@ -889,32 +821,13 @@ body {
   padding: 1rem;
 }
 
-.p-6 {
-  padding: 1.5rem;
-}
-
 .p-9 {
   padding: 2.25rem;
-}
-
-.px-1 {
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
 }
 
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-}
-
-.px-5 {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-}
-
-.px-6 {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
 }
 
 .px-9 {
@@ -932,27 +845,13 @@ body {
   padding-bottom: 0.125rem;
 }
 
-.py-1 {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-}
-
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
 
-.py-5 {
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
-}
-
 .text-center {
   text-align: center;
-}
-
-.font-sans {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .text-2xl {
@@ -1066,12 +965,6 @@ body {
           backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
 }
 
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
 .autocomplete-numbers,
 .autocomplete-items {
   position: absolute;
@@ -1128,16 +1021,6 @@ body {
 .placeholder\:text-Overlay1::placeholder {
   --tw-text-opacity: 1;
   color: rgb(127 132 156 / var(--tw-text-opacity));
-}
-
-.hover\:bg-\[\#559732\]:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(85 151 50 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-\[\#5C5E7B\]:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(92 94 123 / var(--tw-bg-opacity));
 }
 
 @media (min-width: 768px) {

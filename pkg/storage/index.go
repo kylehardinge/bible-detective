@@ -15,6 +15,7 @@ func OpenManifest(version string) (db.BibleManifest, error) {
 		panic(err.Error())
 	}
 	manifest := db.BibleManifest{}	
+    // Unmarshall the data into a struct usable by go
 	json.Unmarshal(contents, &manifest)
 	return manifest, nil
 }

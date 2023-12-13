@@ -1,4 +1,4 @@
-// The stuff
+// Get all the necessicary document elements
 let verseText = document.getElementById("verse-box");
 let guessInputBook = document.getElementById("guess-input-book");
 let guessInputChapter = document.getElementById("guess-input-chapter");
@@ -15,16 +15,9 @@ let guessedChapter = document.getElementById("guessed-chapter");
 let finishWindow = document.getElementById("finish-window");
 let gameWindow = document.getElementById("game-window");
 let scoreWindow = document.getElementById("scoring-window");
-// let newGameButton = document.getElementById("new-game-button");
-// let finalScore = document.getElementById("final-score-box");
-
-// gameWindow.style.display = "block";
-// scoreWindow.style.display = "none";
 
 // What verse are we guessing?
 let verseToGuess;
-let totalScore = 0;
-let totalDistance = 0;
 
 // API calls
 
@@ -77,6 +70,7 @@ function nameToId(book) {
     }
 }
 
+// Return a message based on a given score
 function message(score) {
     if (score == 5000) {
         return "Excellent!";
@@ -104,15 +98,21 @@ function resetGame() {
     populateVerse();
 }
 
+// When the game is finished, do all the necessary things
 function finishGame() {
+    // Remove footer for styling
     document.getElementById("footer").classList.add("hidden");
+    // Make the finish window visible
     gameWindow.style.display = "none";
     scoreWindow.style.display = "none";
     finishWindow.style.display = "flex";
+    // Show the final score, avg distance, and total distance
     finalScoreText.innerText = totalScore.toLocaleString();
     document.getElementById("tot-distance").innerText = totalDistance.toLocaleString();
     document.getElementById("avg-distance").innerText = Math.round(totalDistance / 5).toLocaleString();
 
+    // Set the highscores up to a max of 10
+    // In the future it would be good to seperate difficulties
     let highscores = JSON.parse(localStorage.getItem("highscores")) || [];
     highscores.push({ "score": totalScore, "date": new Date().toLocaleDateString(), "difficulty": localStorage.getItem("difficulty") });
     highscores.sort((a, b) => b.score - a.score);
@@ -120,6 +120,7 @@ function finishGame() {
     localStorage.setItem("highscores", JSON.stringify(highscores));
 }
 
+// Start a new game and reset various vars
 function newGame() {
     round = 0;
     totalScore = 0;
@@ -132,6 +133,8 @@ function newGame() {
 
     populateVerse();
 }
+
+// Functions to remove the various autocompletes when the input is blurred
 function removeVerseAC() {
     document.getElementById("verse-autocomplete-list").remove();
     guessInputVerse.removeEventListener("blur", removeVerseAC);
@@ -140,11 +143,6 @@ function removeVerseAC() {
 function removeChapterAC() {
     document.getElementById("chapter-autocomplete-list").remove();
     guessInputChapter.removeEventListener("blur", removeChapterAC);
-}
-
-function removeBookAC() {
-    document.getElementById("book-autocomplete-list").remove();
-    guessInputBook.removeEventListener("blur", removeChapterAC);
 }
 
 
@@ -168,6 +166,7 @@ function populateVerse() {
     });
 }
 
+// Process the guess the user makes
 function processGuess() {
     if (guessInputBook.value == "" || guessInputChapter.value == "" || guessInputVerse.value == "") {
         alert("Please make a guess");
@@ -248,72 +247,81 @@ function closeModal() {
 
 // Autocomplete functions
 
+// Autocomplete for the chapters
 function chapterAutoComplete() {
+    // Verify it is possible to get a chapter count
     if (guessInputBook.value == "") {
         return
     }
+    
+    // Get the guessed book
     let guessBook = guessInputBook.value;
     let book = manifest.books.find(({ name }) => name.toLowerCase() === guessBook.toLowerCase())
     if (book == undefined) {
         return;
     }
+    // Get the number of chapters of the book
     let numChapters = book.num_chapters;
-    let a, b;
-    /*create a DIV element that will contain the items (values):*/
-    a = document.createElement("DIV");
-    a.setAttribute("id", "chapter-autocomplete-list");
-    a.setAttribute("class", "autocomplete-numbers");
-    // a.setAttribute("class", "autocomplete-items");
-    /*append the DIV element as a child of the autocomplete container:*/
-    this.parentNode.appendChild(a);
-    /*create a DIV element for each matching element:*/
-    b = document.createElement("div");
-    /*make the matching letters bold:*/
-    b.innerHTML = "1-" + numChapters;
-    /*insert a input field that will hold the current array item's value:*/
-    b.innerHTML += "<input type='hidden' value='1-" + numChapters + "'>";
-    a.appendChild(b);
+    // Create vars for the divs for the autocomplete
+    let outerDiv, chapterListDiv;
+    // Create a div that will contain the chapters that are possible to guess
+    outerDiv = document.createElement("div");
+    outerDiv.setAttribute("id", "chapter-autocomplete-list");
+    outerDiv.setAttribute("class", "autocomplete-numbers");
+    // Add this div to the input element
+    this.parentNode.appendChild(outerDiv);
+    // Add the number of chapters that are possible to guess
+    chapterListDiv = document.createElement("div");
+    chapterListDiv.innerHTML = "1-" + numChapters;
+    chapterListDiv.innerHTML += "<input type='hidden' value='1-" + numChapters + "'>";
+    outerDiv.appendChild(chapterListDiv);
+    // Add an event listener for when the input is left
     guessInputChapter.addEventListener("blur", removeChapterAC);
 }
 
+// Autocomplete for the verses
 function verseAutoComplete() {
+    // Verify it is possible to get a verse count
     if (guessInputBook.value == "") {
         return;
     }
     if (guessInputChapter.value == "") {
         return;
     }
+
+    // Get the guessed book
     let guessBook = guessInputBook.value;
     let guessChapter = guessInputChapter.value;
     let book = manifest.books.find(({ name }) => name.toLowerCase() === guessBook.toLowerCase())
     if (book == undefined) {
         return;
     }
+    // Get the number of hcpaters of the book
     let numVerses = book.chapters[guessChapter - 1];
-    let a, b;
-    /*create a DIV element that will contain the items (values):*/
-    a = document.createElement("div");
-    a.setAttribute("id", "verse-autocomplete-list");
-    a.setAttribute("class", "autocomplete-numbers");
-    // a.setAttribute("class", "autocomplete-items");
-    /*append the DIV element as a child of the autocomplete container:*/
-    this.parentNode.appendChild(a);
-    /*create a DIV element for each matching element:*/
-    b = document.createElement("div");
-    /*make the matching letters bold:*/
-    b.innerHTML = "1-" + numVerses;
-    /*insert a input field that will hold the current array item's value:*/
-    b.innerHTML += "<input type='hidden' value='" + numVerses + "'>";
-    a.appendChild(b);
+    // Create vars for the divs for the autocomplete
+    let outerDiv, verseListDiv;
+    // Creae a div that will contain the chapters that are possible to guess
+    outerDiv = document.createElement("div");
+    outerDiv.setAttribute("id", "verse-autocomplete-list");
+    outerDiv.setAttribute("class", "autocomplete-numbers");
+    // Add this div to the input element
+    this.parentNode.appendChild(outerDiv);
+    // Add the number of chapters that are possible to guess
+    verseListDiv = document.createElement("div");
+    verseListDiv.innerHTML = "1-" + numVerses;
+    verseListDiv.innerHTML += "<input type='hidden' value='" + numVerses + "'>";
+    outerDiv.appendChild(verseListDiv);
+    // Add an event listener for when the input is left
     guessInputVerse.addEventListener("blur", removeVerseAC);
 }
-function autocomplete(inp, arr) {
+
+function autoComplete(inp, arr) {
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
-    var currentFocus;
+    let currentFocus;
     /*execute a function when someone writes in the text field:*/
     inp.addEventListener("input", function(e) {
-        var a, b, i, val = this.value;
+        let a, b, i, val = this.value;
         /*close any already open lists of autocompleted values*/
         closeAllLists();
         if (!val) { return false; }
@@ -350,7 +358,7 @@ function autocomplete(inp, arr) {
     });
     /*execute a function presses a key on the keyboard:*/
     inp.addEventListener("keydown", function(e) {
-        var x = document.getElementById(this.id + "autocomplete-list");
+        let x = document.getElementById(this.id + "autocomplete-list");
         if (x) x = x.getElementsByTagName("div");
         if (e.keyCode == 40) {
             /*If the arrow DOWN key is pressed,
@@ -392,7 +400,7 @@ function autocomplete(inp, arr) {
     function closeAllLists(elmnt) {
         /*close all autocomplete lists in the document,
         except the one passed as an argument:*/
-        var x = document.getElementsByClassName("autocomplete-items");
+        let x = document.getElementsByClassName("autocomplete-items");
         for (var i = 0; i < x.length; i++) {
             if (elmnt != x[i] && elmnt != inp) {
                 x[i].parentNode.removeChild(x[i]);
@@ -409,22 +417,28 @@ function autocomplete(inp, arr) {
 
 // Main function
 function main() {
+    // Zero out necessary variables
     round = 0;
     totalScore = 0;
+    totalDistance = 0;
 
-
+    // Make the game window visible
     gameWindow.style.display = "flex";
     scoreWindow.style.display = "none";
     finishWindow.style.display = "none";
-
+    
+    // Put a verse to guess on the screen
     populateVerse();
+    
+    // Add an event listener for the share button and autocompletes
     document.getElementById('share-btn').onclick = copyContent;
-
-    // guessInputBook.addEventListener("input", bookAutoComplete);
     guessInputChapter.addEventListener("focus", chapterAutoComplete);
     guessInputVerse.addEventListener("focus", verseAutoComplete);
+    // Event listener for the guess button
     guessButton.addEventListener("click", processGuess);
-    // newGameButton.addEventListener("click", newGame);
+    
+    // Loop through the next round buttons and add event listeners to go to the correct menu based on the round number
+    // There are multiple buttons because of the mobile dev
     for (let nextRoundButton of nextRoundButtons) {
         nextRoundButton.addEventListener("click", () => {
             if (round == 5) {
@@ -434,15 +448,25 @@ function main() {
             }
         });
     }
+
+    // The correct book list
     let bookList = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi", "Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"];
 
-    autocomplete(guessInputBook, bookList);
+    // Run the autocomplete function on the book
+    autoComplete(guessInputBook, bookList);
 }
 
 
+// Vars for the round, total score and distance
+let totalScore = 0;
+let totalDistance = 0;
 let round = 0;
+
+// The manifest for the kjv Bible
 let manifest;
 getManifest().then(function(result) {
     manifest = result;
 })
+
+// Run the game
 main(manifest);
