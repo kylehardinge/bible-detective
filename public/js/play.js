@@ -36,6 +36,8 @@ async function getRandomVerse() {
             contextVerses = 1;
             break;
         case "hard":
+        // FALL THROUGH!
+        case "impossible":
             contextVerses = 0;
             break;
     }
@@ -151,13 +153,20 @@ function removeChapterAC() {
 // Get a random verse and put it on the screen
 function populateVerse() {
     round += 1;
+
+    let difficulty = localStorage.getItem("difficulty");
+
     document.getElementById("round").innerText = round;
     getRandomVerse().then(function(result) {
         verseToGuess = result;
         let verseHTML = ``;
+        if (difficulty == "impossible") {
+            let words = verseToGuess.text.split(" ");
+            verseToGuess.text = words[Math.round(Math.random() * (words.length - 1))];
+        }
         for (let verse of result.context) {
             if (verse.id === result.id) {
-                verseHTML += `<p class="border-solid border-Green border-2 p-1" id="verse-to-guess">${verse.text}</p>`;
+                verseHTML += `<p class="border-solid border-Green border-2 p-1" id="verse-to-guess">${verseToGuess.text}</p>`;
             } else {
                 verseHTML += `<p class="">${verse.text}</p>`;
             }
@@ -253,7 +262,7 @@ function chapterAutoComplete() {
     if (guessInputBook.value == "") {
         return
     }
-    
+
     // Get the guessed book
     let guessBook = guessInputBook.value;
     let book = manifest.books.find(({ name }) => name.toLowerCase() === guessBook.toLowerCase())
@@ -354,7 +363,7 @@ function autoComplete(inp, arr) {
                 a.appendChild(b);
             }
         }
-        
+
     });
     /*execute a function presses a key on the keyboard:*/
     inp.addEventListener("keydown", function(e) {
@@ -426,17 +435,17 @@ function main() {
     gameWindow.style.display = "flex";
     scoreWindow.style.display = "none";
     finishWindow.style.display = "none";
-    
+
     // Put a verse to guess on the screen
     populateVerse();
-    
+
     // Add an event listener for the share button and autocompletes
     document.getElementById('share-btn').onclick = copyContent;
     guessInputChapter.addEventListener("focus", chapterAutoComplete);
     guessInputVerse.addEventListener("focus", verseAutoComplete);
     // Event listener for the guess button
     guessButton.addEventListener("click", processGuess);
-    
+
     // Loop through the next round buttons and add event listeners to go to the correct menu based on the round number
     // There are multiple buttons because of the mobile dev
     for (let nextRoundButton of nextRoundButtons) {

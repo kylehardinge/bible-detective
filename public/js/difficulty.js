@@ -31,6 +31,8 @@ function getDifficultyColor(difficulty) {
             return "#cba6f7";
         case "hard":
             return "#f38ba8";
+        case "impossible":
+            return "#b4befe";
         default:
             return "#7f849c";
     }
