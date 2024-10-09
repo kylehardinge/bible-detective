@@ -74,5 +74,5 @@ func main() {
 
 	// Start the server on port 8080 localhost
     // On the server this is replaced to ":80" to start the server on port 80 of the machine
-	e.Logger.Fatal(e.Start("localhost:8080"))
+	e.Logger.Fatal(e.Start("0.0.0.0:8080"))
 }

@@ -1,41 +1,26 @@
-# Bible Detective v1.0.0
+# Theoguessr v1.0.1
 
-The repo for the Bible Detective website project!
+The repo for the Theoguessr website project!
 
-# Initial Installations
+# Setup
 
+## Env Variables
+Put these environment variables in a `.env` file and set secure passwords.
+```env
+MYSQL_ROOT_PASSWORD=password
+MYSQL_USERNAME=theoguessr_user
+MYSQL_PASSWORD=password2
+```
 
-## Golang
-
-You will need to install the go programming language to build and run this project.
-Here's the [website](https://go.dev/) for info on how to do that for your operating system.
-
-
-## NPM
-
-You will also need to install Node.js to be able to make the tailwind portion of the webiste work.
-Here's the [website](https://nodejs.org/en/) for where you can download that to your operating system.
-
-
-## MYSQL
-
-You are going to need MYSQL for the servers database. The website to download it is [here](https://dev.mysql.com/downloads/mysql/). Follow the installation instructions and change the root password.
+## Docker
+This project runs within docker and once the environment variables are setup can be ran with the following:
+```sh
+docker compose up
+```
+The server should now be accessable on [localhost](localhost).
 
 
-### Password configuration
-
-Copy the `db.config.example` file and rename it to `db.config`. Change the password variable in the file to the password you set for the sql database.
-
-
-### Setup database
-
-Log into the database. If using the command line, you should be able to do `mysql -u root -p` and then enter the password when prompted. Once in you can run run the command `create database bible_detective;` to create the database that theoguessr is looking for. 
-
-
-## The Project
-
-Clone this repo to a place you like on your computer.
-
+# Development Setup
 
 ## Air (OPTIONAL)
 
@@ -98,6 +83,3 @@ sudo ./main.go
 if the executable requires higher privelages for running a web server.
 
 
-## Both options
-
-Once you have the web server started, you are almost done, navigate to [localhost:8080](localhost:8080) and you should be able to play the game.

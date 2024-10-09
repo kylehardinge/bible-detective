@@ -1,7 +1,6 @@
 package db
 
 import (
-	"bufio"
 	"bytes"
 	"database/sql"
 	"encoding/json"
@@ -116,7 +115,7 @@ func InitDb() {
 	}
 
     // If everything is successful the database is useful
-	fmt.Println("Connection successful to test database")
+	fmt.Println("Connection successful to database")
 	Db = db
 }
 
@@ -317,29 +316,11 @@ func saveManifest(manifest BibleManifest) error {
 // Loads the server configuration info from db.config. This avoids having to store the database password in this file.
 // Returns the config in a formatted string that the go sql driver can understand
 func dbConfig() string {
-	file, err := os.Open("db.config")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer file.Close()
 	dbInfo := dbConfigInfo{}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		raw := strings.Split(scanner.Text(), "=")
-		switch raw[0] {
-		case "username":
-			dbInfo.username = raw[1]
-		case "password":
-			dbInfo.password = raw[1]
-		case "protocol":
-			dbInfo.protocol = raw[1]
-		case "server":
-			dbInfo.server = raw[1]
-		case "port":
-			dbInfo.port = raw[1]
-		case "database":
-			dbInfo.database = raw[1]
-		}
-	}
-	return fmt.Sprintf("%s:%s@%s(%s:%s)/%s", dbInfo.username, dbInfo.password, dbInfo.protocol, dbInfo.server, dbInfo.port, dbInfo.database)
+    dbInfo.username = os.Getenv("DATABASE_USERNAME")
+    dbInfo.password = os.Getenv("DATABASE_PASSWORD")
+    dbInfo.protocol = os.Getenv("DATABASE_PROTOCOL")
+    dbInfo.server = os.Getenv("DATABASE_CONTAINER_NAME")
+    dbInfo.database = os.Getenv("DATABASE_NAME")
+	return fmt.Sprintf("%s:%s@%s(%s)/%s", dbInfo.username, dbInfo.password, dbInfo.protocol, dbInfo.server, dbInfo.database)
 }

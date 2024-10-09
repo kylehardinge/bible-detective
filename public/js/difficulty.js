@@ -1,4 +1,3 @@
-
 // Set the difficulty if not already set
 let difficulty = localStorage.getItem("difficulty");
 if (difficulty !== null) {
