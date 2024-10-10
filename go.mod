@@ -1,4 +1,4 @@
-module bible-detective/site
+module theoguessr/site
 
 go 1.21.3
 

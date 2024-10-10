@@ -1,17 +1,17 @@
 package main
 
 import (
-	"bible-detective/site/pkg/db"
-	"bible-detective/site/pkg/router"
+	"theoguessr/site/pkg/db"
+	"theoguessr/site/pkg/router"
 	"html/template"
 	"io"
 	"log"
+	"os"
 	"path"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-    // Uncomment when running the autocert
-    // "golang.org/x/crypto/acme/autocert"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // Template completion
@@ -42,10 +42,13 @@ func main() {
     
     // TLS stuff so that the website doesnt say "not secure"
     // When running on localhost the line below and the https redirect middleware is not needed. In testing it does not work
-    // e.AutoTLSManager.Cache = autocert.DirCache("var/www/.cache")
-	// Put sitewide middleware here
-    // Redirect to https
-    // e.Pre(middleware.HTTPSRedirect())
+    if (os.Getenv("IS_PROD") == "true") {
+        e.AutoTLSManager.Cache = autocert.DirCache("var/www/.cache")
+        // Middleware to redirect to https
+        e.Pre(middleware.HTTPSRedirect())
+        log.Printf("TLS/HTTPS enabled: true")
+    }
+    // Put sitewide middleware here
 	// Recover the runtime in cases of panics
 	e.Use(middleware.Recover())
 	// Log requests to the console

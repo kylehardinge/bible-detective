@@ -4,7 +4,7 @@ import (
 	"os"
 	"fmt"
 	"encoding/json"
-	"bible-detective/site/pkg/db"
+	"theoguessr/site/pkg/db"
 )
 
 // OpenManifest gets the manifest JSON file for a given bible version

@@ -2,9 +2,9 @@
 package router
 
 import (
-	"bible-detective/site/pkg/db"
-	"bible-detective/site/pkg/parser"
-	"bible-detective/site/pkg/storage"
+	"theoguessr/site/pkg/db"
+	"theoguessr/site/pkg/parser"
+	"theoguessr/site/pkg/storage"
 	"strconv"
 
 	"math/rand"

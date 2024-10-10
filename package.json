@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kylehardinge/bible-detective.git"
+    "url": "git+https://github.com/kylehardinge/theoguessr.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/kylehardinge/bible-detective/issues"
+    "url": "https://github.com/kylehardinge/theoguessr/issues"
   },
-  "homepage": "https://github.com/kylehardinge/bible-detective#readme",
+  "homepage": "https://github.com/kylehardinge/theoguessr#readme",
   "dependencies": {
     "tailwindcss": "^3.3.5"
   }
