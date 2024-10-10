@@ -37,9 +37,9 @@ async function getRandomVerse() {
             break;
         case "hard":
         // FALL THROUGH!
-        case "impossible":
-            contextVerses = 0;
-            break;
+        // case "impossible":
+        //     contextVerses = 0;
+        //     break;
     }
     let response = await fetch(`/api/random?contextVerses=${contextVerses}`);
     let verse = await response.json();
@@ -154,16 +154,16 @@ function removeChapterAC() {
 function populateVerse() {
     round += 1;
 
-    let difficulty = localStorage.getItem("difficulty");
+    // let difficulty = localStorage.getItem("difficulty");
 
     document.getElementById("round").innerText = round;
     getRandomVerse().then(function(result) {
         verseToGuess = result;
         let verseHTML = ``;
-        if (difficulty == "impossible") {
-            let words = verseToGuess.text.split(" ");
-            verseToGuess.text = words[Math.round(Math.random() * (words.length - 1))];
-        }
+        // if (difficulty == "impossible") {
+        //     let words = verseToGuess.text.split(" ");
+        //     verseToGuess.text = words[Math.round(Math.random() * (words.length - 1))];
+        // }
         for (let verse of result.context) {
             if (verse.id === result.id) {
                 verseHTML += `<p class="border-solid border-Green border-2 p-1" id="verse-to-guess">${verseToGuess.text}</p>`;
