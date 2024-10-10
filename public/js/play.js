@@ -38,8 +38,8 @@ async function getRandomVerse() {
         case "hard":
         // FALL THROUGH!
         // case "impossible":
-        //     contextVerses = 0;
-        //     break;
+            contextVerses = 0;
+            break;
     }
     let response = await fetch(`/api/random?contextVerses=${contextVerses}`);
     let verse = await response.json();
