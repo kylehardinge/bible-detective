@@ -63,6 +63,7 @@ func main() {
 	e.Static("/js", "public/js")
 	e.Static("/css", "public/css")
 	e.Static("/img", "public/img")
+	e.Static("/pwa", "public/pwa")
 
 	// Routes for the api
 	api := e.Group("/api")
