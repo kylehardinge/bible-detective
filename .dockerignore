@@ -3,6 +3,5 @@ cmd/tmp
 node_modules
 db.config
 .DS_Store
-.air.toml
 .git
 .env
